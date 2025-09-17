@@ -1,0 +1,30 @@
+/* norme.module.css */
+
+.container {
+  padding-top: 70px; /* pour header fixe */
+  padding: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #192719;
+  color: white;
+}
+
+.loader {
+  padding-top: 100px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #192719;
+}
