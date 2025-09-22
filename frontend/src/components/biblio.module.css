@@ -1,0 +1,384 @@
+.container {
+  display: flex;
+  justify-content: center; /* centre horizontalement la card */
+  padding: 0;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card {
+  width: 100%;
+max-width: 100%;
+  overflow: hidden;
+}
+
+.cardContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  max-width: 100%;
+  width: 100%;
+  flex-direction: column;
+  padding: 0;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.cardImage img {
+  width: 100%;  
+  height: 100%;
+  object-fit: cover;
+  display: block;
+
+}
+.cardImage{
+    width: 100%;
+    height: 420px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+    
+}
+
+/* Overlay centré dans l’image */
+.overlay {
+  position: absolute;
+  top: 60%;
+width: 90%; 
+  left: 50%;
+  justify-content: space-around;
+  display: flex;
+  align-items: center;
+
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.3); /* fond sombre transparent */
+  padding: 20px 30px;
+
+}
+
+.total{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.total h4 {
+  font-size: 1.2rem; /* plutôt que fixe en px */
+  letter-spacing: 1px;
+}
+
+
+.counter {
+  font-size: 2.5rem; /* taille de base */
+  font-weight: bold;
+  display: block;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+
+.content {
+    padding: 10px;
+    max-width: 70%;
+   padding-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.seacrhBar {
+    height: auto;
+    background-color: white;
+    border: 2px solid #adadad;
+    display: flex;
+    padding-left: 30px;
+    padding-right: 15px;
+    align-items: center;
+    width: 800px; /* valeur par défaut pour grand écran */
+    border-radius: 55px;
+    transition: width 0.3s ease; /* animation douce lors du redimensionnement */
+}
+.seacrhBar input::placeholder {
+    font-weight: normal; 
+    /* force font-weight normal pour le placeholder */
+    color: #757575; /* optionnel, pour qu'il soit plus clair */
+}
+.seacrhBar:hover{
+    border: 2px solid rgb(27, 187, 160);
+}
+
+.seacrhBar input {
+    width: 100%;
+    background-color: transparent;
+    padding: 25px 25px 25px 15px;
+    font-size: 1.2rem;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    font-weight: 600;
+}
+
+
+.seacrhBar i {
+    font-size: 1.8rem;
+    color: #14535f;
+}
+
+
+
+.scrollContainer {
+    margin-top: 0px;
+  position: relative;       /* conteneur relatif pour position absolue des boutons */
+  display: flex;
+  padding: 10px;
+  align-items: center;
+  width: 90%;
+user-select: none;
+
+}
+
+.scrollBtns {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 17px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 1;
+  position: relative;
+  z-index: 1;              /* zone scrollable sous les boutons */
+  padding-left: 8px ;
+  padding-right: 8px;         /* petit padding pour espacement */
+  scrollbar-width: none;
+
+}
+
+.scrollBtns::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollArrow {
+  position: absolute;      /* boutons flottants */
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;             /* toujours au-dessus */
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.scrollArrow:hover {
+  transform: translateY(-50%) scale(1.1);
+  background-color: #f0f0f0;
+}
+
+.scrollArrow.left {
+  left: 0;
+}
+
+.scrollArrow.right {
+  right: 0;
+}
+
+
+.scrollBtn { padding: 15px 20px;
+   border: 1.5px solid #fafafa; 
+   border-radius: 5px;
+    border: 1px solid #e2e2e2;
+     background-color: #fcfcfc;
+      color: #1B6979; font-weight: 500; 
+      font-size: 15px; cursor: pointer; white-space: nowrap; transition: all 0.25s ease; } .scrollBtn:hover { background-color: rgba(27, 105, 121, 0.1); } .activeBtn { transition: all 0.25s ease; background-color: #1B6979; color: white; border-color: none; box-shadow: 0 3px 8px rgba(27, 105, 121, 0.3); } .activeBtn:hover{ color: #1B6979; background-color:#fcfcfc ; }
+
+  .scrollContainer i{
+    font-size: 17px;
+  }
+/* Floating Action Button (mobile) */
+.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #1B6979;
+  color: white;
+  width: 65px;
+  height:65px;
+  border-radius: 50%;
+  display: none;   /* caché par défaut */
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 1000;
+    transition: transform 0.2s ease, background-color 0.3s;
+}
+
+/* sur hover */
+.fab:hover {
+  background-color: #14535f;
+}
+
+.fab:active {
+  transform: scale(0.9); /* feedback tactile */
+}
+
+.listes {
+    width: 100vw; /* prend toute la largeur de l’écran */
+    max-width: 100%; /* empêche le débordement */
+    margin: 0; /* supprime margin top si besoin */
+    padding: 45px;
+    display: flex;
+    align-items: flex-start; /* alignement en haut */
+    flex-wrap: wrap;
+    background-color: rgb(243, 243, 243);
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+
+
+.cardliste {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  width:23%; /* cinq cartes sur grand écran */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.cardliste:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+
+
+@media (max-width: 1060px) {
+  .counter {
+    font-size: 2rem;
+  }
+  .total h4 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width:640px) {
+  .overlay {
+    flex-direction: column; /* les compteurs passent en colonne */
+    gap: 15px;
+  }
+  .counter {
+    font-size: 1.8rem;
+  }
+  .total h4 {
+    font-size: 0.9rem;
+  }
+  .cardImage {
+    height:370px;
+  }
+}
+
+@media (max-width: 768px) {
+    .seacrhBar {
+        width: 480px;
+        padding-left: 20px;
+        padding-right: 15px;
+    }
+     .scrollBtns {
+    padding-right: 0 !important;
+    padding-left: 0 !important; /* (optionnel si tu veux vraiment coller au bord) */
+  }
+
+   .scrollBtn{
+    font-size: 12px;
+    padding: 10px 15px;
+  }
+  .scrollContainer{
+width: 420px ;
+;
+  }
+  .scrollContainer i{
+    font-size: 12px;
+  }
+    .seacrhBar input {
+        padding: 20px 15px;
+        font-size: 1rem;
+    }
+
+    .seacrhBar i {
+        font-size: 1.5rem;
+    }
+    .seacrhBar input::placeholder {
+        font-size: 1.0rem;
+    }
+}
+
+@media (max-width: 490px) {
+    .seacrhBar {
+        width: 400px !important; /* prend presque toute la largeur */
+        padding-left: 22px;
+        padding-right: 10px;
+    }
+
+    .seacrhBar input {
+        padding: 20px 13px;
+        font-size: 0.95rem;
+    }
+
+    .seacrhBar i {
+        font-size: 1.6rem;
+    }
+}
+
+
+
+
+@media (max-width: 413px) {
+
+    .scrollContainer{
+        width: 350px;
+    }
+}
+
+
+@media (max-width: 476px) {
+
+   .seacrhBar input::placeholder {
+    font-size: 0.9rem;
+   }
+   .listes{
+    padding: 25px !important;
+   }
+}
+
+
+@media (max-width: 423px) {
+
+   .seacrhBar {
+    width: 345px !important;
+   }
+}
+@media (max-width: 370px) {
+
+   
+   .seacrhBar {
+    width: 330px !important;
+   }
+}
+
+

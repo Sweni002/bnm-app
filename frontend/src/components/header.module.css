@@ -13,6 +13,8 @@
 }
 
 .header {
+  position: fixed;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -24,7 +26,7 @@ padding-right: 25px;
   background-color: rgb(243, 243, 243);
   color: white;
   
-    top: 150px; 
+    top: 0px; 
   width: 100%;
   z-index: 1000;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -113,6 +115,7 @@ padding-right: 25px;
   justify-content: center;
 }
 .text h3{
+  font-size: 1.2rem;
   color: rgb(90, 90, 90);
 }
 

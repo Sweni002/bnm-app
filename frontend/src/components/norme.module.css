@@ -1,7 +1,8 @@
 /* norme.module.css */
 
 .container {
-  margin-top: 30px; /* pour header fixe */
+  
+  margin-top: 120px; /* pour header fixe */
   padding-right: 25px;
   
    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -357,7 +358,7 @@ user-select: none;
   font-size: 28px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.3);
   cursor: pointer;
-  z-index: 1000;
+  z-index: 1200;
     transition: transform 0.2s ease, background-color 0.3s;
 }
 

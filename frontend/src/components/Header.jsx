@@ -17,6 +17,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import BusinessIcon from "@mui/icons-material/Business";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Divider from "@mui/material/Divider";
+import { useNavigate } from 'react-router-dom';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -83,7 +84,7 @@ function Header({ user }) {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 const [activeMenu, setActiveMenu] = useState("Liste des Normes");
-
+  const navigate = useNavigate();
     const toggleDrawer = (open) => (event) => {
     if (
       event.type === "keydown" &&
@@ -92,6 +93,18 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
       return;
     }
     setDrawerOpen(open);
+  };
+
+    const handleMenuClick = (item) => {
+    setActiveMenu(item);
+
+    if (item === "Normes") {
+      navigate("/norme");
+    } else if (item === "Liste des Normes") {
+      navigate("/list_norme");
+    } else if (item === "Secteur") {
+      navigate("/secteur");
+    }
   };
   return (
     <>
@@ -108,7 +121,7 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
     <li
       key={item}
       className={activeMenu === item ? styles.activeMenu : ""}
-      onClick={() => setActiveMenu(item)}
+        onClick={() => handleMenuClick(item)}
     >
       {item}
     </li>
