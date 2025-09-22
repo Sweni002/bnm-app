@@ -46,7 +46,7 @@ setLoading(true)
     if (!hasError) {
       setError(false);
       setLoading(true);
-    //  onLogin(username);
+     onLogin(username);
     } else {
       setError(true);
     }
@@ -72,6 +72,7 @@ setLoading(true)
 
         <h2>Connexion</h2>
   <TextField
+
       onChange={(e) => {
     setUsername(e.target.value);
     if (e.target.value) setUsernameError(false); // supprime l'erreur dès que l'utilisateur tape
@@ -83,7 +84,22 @@ setLoading(true)
         variant="standard"
         fullWidth
         
-        sx={{ mb: 2 }}
+        sx={{ mb: 2  ,
+            "& .MuiOutlinedInput-root": {
+      borderRadius: 2,
+      pl: 2,
+      pt: 1,
+      pb: 1,
+      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif", // <-- font ici
+    },
+    "& .MuiInputLabel-root": {
+      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif", // si tu as un label
+    },
+    "& .MuiOutlinedInput-input": {
+      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif", // pour le texte saisi
+    },
+        }}
+
            InputProps={{
     endAdornment: (
       <InputAdornment position="end">
@@ -96,13 +112,13 @@ setLoading(true)
     ),
   }}   inputProps={{
     style: {
-      padding: '5px', 
+      padding: '3px', 
       fontSize : 20 // padding intérieur autour du texte
     },
   }}
          InputLabelProps={{
     style: {
-      fontSize: '1.2rem',
+      fontSize: '1.1rem',
           letterSpacing: '1px', // ← ici pour espacement des lettres
 
     
@@ -119,7 +135,21 @@ setLoading(true)
           helperText={error && !password ? "Le mot de passe est obligatoire" : ""}
        
         fullWidth
-    sx={ { mb: 2}}
+    sx={ { mb: 2 ,
+        "& .MuiOutlinedInput-root": {
+      borderRadius: 2,
+      pl: 2,
+      pt: 1,
+      pb: 1,
+      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif", // <-- font ici
+    },
+    "& .MuiInputLabel-root": {
+      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif", // si tu as un label
+    },
+    "& .MuiOutlinedInput-input": {
+      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif", // pour le texte saisi
+    },
+    }}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         InputProps={{
@@ -138,7 +168,7 @@ setLoading(true)
         }}
       inputProps={{
     style: {
-      padding: '5px', 
+      padding: '4px', 
       fontSize : 20 // padding intérieur autour du texte
     },
   }}

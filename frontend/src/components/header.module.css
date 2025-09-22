@@ -1,41 +1,147 @@
 /* header.module.css */
 
+.acceuil {
+  display: flex;
+  width: 100%;
+  height: 150px;
+
+}
+.acceuil img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background-color: #192719;
+  user-select: none;
+ padding-top: 15px ;
+ padding-bottom: 10px;
+ padding-left: 25px;
+padding-right: 25px;
+  background-color: rgb(243, 243, 243);
   color: white;
-  position: fixed;
-  top: 0;
+  
+    top: 150px; 
   width: 100%;
   z-index: 1000;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.logo {
-  font-size: 1.5rem;
+.images{
+  width: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.images img{
+  width: 95px;
+  height: auto;
+  
+}
+  
+.menu{
+  width: 45%;
+
+}
+.menu ul{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  list-style-type: none;
+  justify-content: space-around;
+}
+.menu ul li {
+  position: relative;
+  font-weight: bold;
+  font-size: 18px;
+  color: #222; /* noir/gris foncé neutre */
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: color 0.25s ease;
+}
+
+/* survol : passe en vert (primary) */
+.menu ul li:hover {
+  color: #44B700;
+}
+
+/* underline animé marron (accent) */
+.menu ul li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 2px;
+  width: 0;
+  background-color: #4B1616;
+  transition: width 0.25s ease;
+}
+
+/* déclenche l’underline */
+.menu ul li:hover::after {
+  width: 100%;
+}
+
+.menu ul li.activeMenu {
+  color: #44B700; /* couleur active */
   font-weight: bold;
 }
 
-.nav {
-  display: flex;
+.menu ul li.activeMenu::after {
+  width: 100%; /* underline toujours visible pour l’item actif */
+}
+
+.comptes{
+  width: 15%;
   gap: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comptes img{
+   width: 110px;
+  height: auto;
 }
 
-.link {
-  color: white;
-  text-decoration: none;
-  font-size: 1rem;
-  transition: 0.3s;
+.text {
+  display: flex;
+  flex-direction:column  ;
+  align-items: flex-end;
+  justify-content: center;
+}
+.text h3{
+  color: rgb(90, 90, 90);
 }
 
-.link:hover {
-  color: #a0b1a0;
+.text label{
+  color: rgb(31, 31, 31);
 }
 
-.user {
-  font-size: 1rem;
-  font-weight: 500;
+.burger {
+  display: none; /* caché en desktop */
+  font-size: 28px;
+  color: #222;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Mode mobile */
+@media screen and (max-width: 768px) {
+  .menu,
+  .comptes {
+    display: none; /* cacher menu + comptes */
+  }
+
+  .burger {
+    display: block; /* montrer l’icône */
+  }
+  .images img {
+    width: 60px ;
+  }
+  .burger i{
+    font-size: 20px;
+  }
 }

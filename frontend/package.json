@@ -20,6 +20,7 @@
     "react-dom": "^19.1.1",
     "react-loading-indicators": "^1.0.1",
     "react-router-dom": "^7.9.1",
+    "react-swipeable-list": "^1.10.0",
     "styled-components": "^6.1.19"
   },
   "devDependencies": {

@@ -11,9 +11,9 @@ function Site({ user }) {
 
       {/* Contenu dynamique */}
       <Routes>
-        <Route path="/list_norme" element={<Norme />} />
+        <Route path="/norme" element={<Norme />} />
         <Route path="/secteur" element={<Secteur />} />
-           <Route path="*" element={<Navigate to="/list_norme" />} />
+           <Route path="*" element={<Navigate to="/norme" />} />
       </Routes>
     </div>
   );

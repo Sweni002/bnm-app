@@ -1,8 +1,14 @@
 /* norme.module.css */
 
 .container {
-  padding-top: 70px; /* pour header fixe */
-  padding: 20px;
+  margin-top: 30px; /* pour header fixe */
+  padding-right: 25px;
+  
+   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+}
+h2{
+  color: black;
 }
 
 .table {
@@ -27,4 +33,479 @@
   text-align: center;
   font-size: 1.2rem;
   color: #192719;
+}
+
+
+.cardcontent{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+   /* 👈 s'étire sur toute la largeur dispo */
+  align-items: center;
+  justify-content: flex-start;
+  padding: 25px;
+  gap: 17px ;
+}
+
+.haut{
+  padding-bottom: 15px;
+  margin-top: 10px;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+align-items: center;
+
+}
+
+.haut button{
+  
+  padding: 15px 20px 15px 20px;
+  outline: none;
+  border: none;
+  border-radius: 8px;
+  background-color: #1B6979;
+  box-shadow: 0 7px 7px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.3s ease; /* transition pour hover et box-shadow */
+}
+
+/* effet au hover */
+.haut button:hover {
+  background-color: #14535f;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25); /* glow plus marqué */
+}
+
+/* effet de “retour” quand la souris quitte */
+.haut button:active,
+.haut button:not(:hover) {
+  box-shadow: 0 7px 7px rgba(0,0,0,0.1); /* retourne à l’état normal */
+}
+
+.jk{
+   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  display: flex;
+  align-items: center;
+}
+.jk i{
+  font-size: 19px;
+}
+.jk span{
+  font-size: 17px;
+}
+
+
+.searchBar{
+  width: 300px;
+ background-color: #e7edee;
+    border-radius: 8px;
+    border: 3px solid transparent;
+    padding: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 10px;
+    margin-right: 35px;
+
+
+}
+.searchBar input{
+   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  width: 80%;
+  font-size: 17px;
+   border: none;
+    background-color: transparent;
+     outline: none; 
+  box-shadow: none;
+  padding: 5px;
+}
+.searchBar:hover{
+  border: 2px solid  #14535f;
+}
+.searchBar i{
+    padding-right: 15px;
+    color: #14535f;
+    font-size: 22px;
+
+}
+
+
+.searchBarMobile{
+  width: 100%;
+ background-color: #e7edee;
+    border-radius: 8px;
+    border: 3px solid transparent;
+    padding: 11px;
+   
+      padding-right: 10px;
+   
+display: none;
+
+}
+.searchBarMobile input{
+   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  width: 90%;
+  font-size: 17px;
+   border: none;
+    background-color: transparent;
+     outline: none; 
+  box-shadow: none;
+  padding: 5px;
+}
+.searchBarMobile:hover{
+  border: 2px solid  #14535f;
+}
+.searchBarMobile i{
+    padding-right: 0px !important;
+
+    color: #14535f;
+    font-size: 22px !important;
+
+}
+.bas{
+  
+  width: 100%;
+  
+  display: flex;
+   height: 100%;
+    user-select: none;
+   
+}
+
+.largeRow {
+  font-size: 15px;
+  height: 60px;
+}
+
+.largeRow td {
+  padding: 20px !important;
+  cursor: pointer;
+}
+
+.largeHeader th {
+  font-size: 17px;
+  padding: 20px !important;
+}
+.largeHeader th {
+  font-size: 15px;
+}
+
+.iconRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 70%;
+  gap: 0; /* par défaut aucun espace */
+}
+
+/* Quand la largeur est inférieure ou égale à 1390px */
+@media (max-width: 1390px) {
+  .iconRow {
+    gap: 15px; /* espace entre les icônes */
+  }
+}
+
+.cardLeft {
+  width: 22%; /* largeur normale */
+  transition: width 0.3s ease;
+}
+
+@media (min-width: 1369px) {
+  .cardLeft {
+    width:18%; /* réduit la card gauche */
+  }
+  .cardRight {
+    width: calc(100% - 18% - 8px); /* s’ajuste quand cardLeft réduit */
+  }
+  .container{
+    padding-right: 5px !important;
+  }
+
+}
+
+@media (max-width: 1601px) {
+  .cardLeft{
+    width: 22% !important;
+  }
+  .cardRight{
+     width: calc(100% - 22% - 8px); 
+  }
+}
+
+.iconCircle {
+  background-color: white;
+  border-radius: 50%;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+.iconCircles {
+  background-color: white;
+  border-radius: 50%;
+  padding: 0px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.iconCircle:hover {
+  transform: scale(1.2);
+}
+.iconCircles:hover {
+  transform: scale(1.2);
+
+
+}
+
+
+.scrollContainer {
+  position: relative;       /* conteneur relatif pour position absolue des boutons */
+  display: flex;
+  align-items: center;
+  width: 100%;
+user-select: none;
+}
+
+.scrollBtns {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 17px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 1;
+  position: relative;
+  z-index: 1;              /* zone scrollable sous les boutons */
+  padding-left: 8px ;
+  padding-right: 8px;         /* petit padding pour espacement */
+  scrollbar-width: none;
+
+}
+
+.scrollBtns::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollArrow {
+  position: absolute;      /* boutons flottants */
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;             /* toujours au-dessus */
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.scrollArrow:hover {
+  transform: translateY(-50%) scale(1.1);
+  background-color: #f0f0f0;
+}
+
+.scrollArrow.left {
+  left: 0;
+}
+
+.scrollArrow.right {
+  right: 0;
+}
+
+
+.cardRight {
+  width: calc(100% - 22% - 8px); /* largeur normale */
+  transition: width 0.3s ease;
+}
+
+.scrollBtn { padding: 15px 20px;
+   border: 1.5px solid #fafafa; 
+   border-radius: 5px;
+    border: 1px solid #e2e2e2;
+     background-color: #fcfcfc;
+      color: #1B6979; font-weight: 500; 
+      font-size: 15px; cursor: pointer; white-space: nowrap; transition: all 0.25s ease; } .scrollBtn:hover { background-color: rgba(27, 105, 121, 0.1); } .activeBtn { transition: all 0.25s ease; background-color: #1B6979; color: white; border-color: none; box-shadow: 0 3px 8px rgba(27, 105, 121, 0.3); } .activeBtn:hover{ color: #1B6979; background-color:#fcfcfc ; }
+
+  .scrollContainer i{
+    font-size: 17px;
+  }
+/* Floating Action Button (mobile) */
+.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #1B6979;
+  color: white;
+  width: 65px;
+  height:65px;
+  border-radius: 50%;
+  display: none;   /* caché par défaut */
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 1000;
+    transition: transform 0.2s ease, background-color 0.3s;
+}
+
+/* sur hover */
+.fab:hover {
+  background-color: #14535f;
+}
+
+.fab:active {
+  transform: scale(0.9); /* feedback tactile */
+}
+@media (max-width: 768px) {
+  .cardRight {
+    width: 100%  !important;
+  }
+  
+   .haut {
+    flex-direction: column;  /* Empile bouton + search */
+    align-items: stretch;
+    gap: 10px;
+     
+    padding-bottom: 0 !important;
+  }
+
+
+ .scrollBtns {
+    padding-right: 0 !important;
+    padding-left: 0 !important; /* (optionnel si tu veux vraiment coller au bord) */
+  }
+    .cardcontent {
+    padding: 0 !important;   /* supprime le padding qui réduit la largeur */
+    align-items: stretch !important; /* pour éviter le centrage */
+  }
+ 
+ .container{
+  padding-left: 15px;
+  padding-right: 15px !important;
+ }
+
+ .haut{
+  padding-bottom: 15px;
+ }
+ .bas{
+  margin-top: 10px;
+ }
+
+ .searchBar {
+  
+    width: 100% !important;
+    margin: 0 !important;
+    font-size: 16px;
+  }
+  .searchBar input {
+    font-size: 15px;
+  }
+  .searchBar i{
+    font-size: 20px;
+  }
+  .searchBarMobile {
+  
+    width: 100% !important;
+    margin: 0 !important;
+    font-size: 16px;
+    
+   
+  }
+  .searchBarMobile input {
+    font-size: 14px;
+  }
+  .searchBarMobile i{
+    margin-top: 4px !important;
+    font-size: 18px;
+  
+  }
+  .cards {
+    padding:12px !important;
+    box-shadow: 0px !important;
+    border: none !important;
+    margin-top:8px !important;
+  }
+ .iconCircles {
+    padding: 10px;         /* plus grand pour toucher facilement */
+    margin: 0 4px;         /* espacement horizontal entre les icônes */
+    font-size: 16px;       /* taille lisible */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+
+  .iconCircles:hover {
+    transform: scale(1.2);
+  }
+
+  /* Conteneur icônes mobile pour centrer et espacer */
+  .actionIconsMobile {
+    display: flex;
+  
+  flex-wrap: wrap;  
+    justify-content: center;
+    align-items: center;
+    gap: 10px;             /* espace entre les 3 icônes */
+  }
+  .actionIconsMobile > :nth-child(3) {
+      /* troisième icône occupe toute la ligne si nécessaire */
+  text-align: center; 
+  /* centre la troisième icône */
+}
+.largeHeader th{
+font-size: 13px !important ;
+padding: 13px !important;
+}
+.largeRow{
+  font-size: 14px;
+}
+
+}
+
+/* Responsive rules */
+@media (max-width: 725px) {
+  .haut button {
+    display: none;   /* cache le bouton normal */
+  }
+.searchBarMobile{
+display: flex;
+  align-items: center;
+    justify-content: center;
+
+
+}
+  .searchBarMobile{
+    width: 100%;
+    margin-right: 0 !important;
+   
+  }
+  .fab {
+    display: flex;   /* montre le FAB en mobile */
+  }
+   .searchBar{
+    display: none;
+    width: 100%;
+    margin-right: 0 !important;
+   
+  }
+  .scrollBtn{
+    font-size: 12px;
+    padding: 10px 15px;
+  }
+  .scrollContainer i{
+    font-size: 12px;
+  }
+ 
 }
