@@ -12,8 +12,10 @@ import { EditOutlined, FileAddOutlined, FileOutlined } from '@ant-design/icons';
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useMediaQuery } from '@mui/material';
 import MobileActionButton from './Modal';
+import { useNavigate } from 'react-router-dom';
 
 function Norme() {
+  const navigate=useNavigate()
   const [normes, setNormes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState("Photos");
@@ -48,6 +50,11 @@ useEffect(() => {
   };
 }, []);
 
+
+const goAjout=()=>{
+
+  navigate("/ajout_norme")
+}
 
 
   
@@ -392,7 +399,7 @@ const secteursAffiches = secteurs.slice(0, 10); // seulement 10 premiers
 
    <div className={styles.haut}>
 
-   <button>
+   <button onClick={goAjout}>
      <div className={styles.jk} style={{ display: "flex", alignItems: "center", gap: 10, color: "white", fontWeight: "bold", fontSize: 19 }}>
               <i className="fa-solid fa-plus"></i><span>Ajouter</span>
             </div>
@@ -420,7 +427,7 @@ const secteursAffiches = secteurs.slice(0, 10); // seulement 10 premiers
   </div>
   </div>
 </Box>
-<div className={styles.fab} >
+<div className={styles.fab} onClick={goAjout} >
  <div className={styles.jk} style={{ display: "flex", alignItems: "center", gap: 10, color: "white", fontWeight: "bold", fontSize: 19 }}>
               <i className="fa-solid fa-plus"></i>
             </div>

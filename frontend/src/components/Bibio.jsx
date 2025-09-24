@@ -4,6 +4,7 @@ import livre from '../assets/livre.jpeg'; // ton image
 import { Card, Row, Col, Statistic } from "antd";
 import { useMediaQuery } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 function AnimatedCounter({ end, duration = 2000 }) {
   const [count, setCount] = useState(0);
@@ -34,6 +35,7 @@ function Biblio() {
        const [showLeft, setShowLeft] = useState(false);
        const [showRight, setShowRight] = useState(false);
       const [selected, setSelected] = useState("Photos");
+const [searchText, setSearchText] = useState('');
 
 const isMobile = useMediaQuery('(max-width:768px)');
 const isMobileSearch = useMediaQuery('(max-width:725px)');
@@ -142,12 +144,25 @@ const isMobileSearch = useMediaQuery('(max-width:725px)');
             </div>
           </div>
           <div className={styles.content}>
-           <div className={styles.seacrhBar}>
-            <i class="fa-solid fa-magnifying-glass"></i>
-           <input type="text" placeholder='Rechercher une norme...'
-            />
+     <div className={styles.seacrhBar}>
+  <i className="fa-solid fa-magnifying-glass"></i>
+<input
+  type="text"
+  placeholder='Rechercher une norme...'
+  value={searchText}
+  onChange={(e) => setSearchText(e.target.value)}
+/>
+{searchText && (
+  <Tooltip title='Effacer' placement='top'>
+   <IconButton size="large" onClick={() => setSearchText('')}>
+       <i className={`fa-solid fa-circle-xmark ${styles.closeIcon}`}></i>
+    </IconButton>
+  </Tooltip>
+)}
 
-           </div>
+
+</div>
+
               {showContainer && (
               <div className={styles.searchContainer}>
                 <p>Contenu du container ici...</p>
@@ -216,8 +231,7 @@ const isMobileSearch = useMediaQuery('(max-width:725px)');
   {[1, 2, 3, 4, 5].map((item) => (
     <div key={item} className={styles.cardliste}>
       <h3>Card {item}</h3>
-      <p>Contenu de la carte {item}</p>
-    </div>
+        </div>
   ))}
 </div>
 

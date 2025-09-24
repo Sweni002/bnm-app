@@ -1,5 +1,10 @@
 /* header.module.css */
 
+*{
+
+   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+}
 .acceuil {
   display: flex;
   width: 100%;
@@ -62,6 +67,9 @@ padding-right: 25px;
   color: #222; /* noir/gris foncé neutre */
   cursor: pointer;
   padding: 6px 12px;
+
+   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
   transition: color 0.25s ease;
 }
 

@@ -101,12 +101,25 @@ width: 90%;
     border: 2px solid #adadad;
     display: flex;
     padding-left: 30px;
-    padding-right: 15px;
+    padding-right: 18px;
     align-items: center;
     width: 800px; /* valeur par défaut pour grand écran */
     border-radius: 55px;
     transition: width 0.3s ease; /* animation douce lors du redimensionnement */
 }
+
+.closeIcon {
+  font-size: 1.5rem !important;
+  color: gray !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closeIcon:hover {
+  color:rgb(71, 143, 71) !important;   /* couleur au survol */
+  transform: scale(1.2); /* petit zoom */
+}
+
 .seacrhBar input::placeholder {
     font-weight: normal; 
     /* force font-weight normal pour le placeholder */
@@ -119,8 +132,8 @@ width: 90%;
 .seacrhBar input {
     width: 100%;
     background-color: transparent;
-    padding: 25px 25px 25px 15px;
-    font-size: 1.2rem;
+    padding: 22px 25px 22px 15px;
+    font-size: 1.1rem;
     border: none;
     outline: none;
     box-shadow: none;
@@ -241,10 +254,11 @@ user-select: none;
     max-width: 100%; /* empêche le débordement */
     margin: 0; /* supprime margin top si besoin */
     padding: 45px;
+    padding-left: 110px;
     display: flex;
     align-items: flex-start; /* alignement en haut */
     flex-wrap: wrap;
-    background-color: rgb(243, 243, 243);
+    background-color: rgb(240, 240, 240);
     gap: 20px;
     justify-content: flex-start;
 }
@@ -252,6 +266,7 @@ user-select: none;
 
 
 .cardliste {
+  display: flex;
   background: #fff;
   border-radius: 10px;
   padding: 20px;
@@ -294,6 +309,14 @@ user-select: none;
 }
 
 @media (max-width: 768px) {
+  .listes{
+    display: flex;
+    flex-direction: column;
+
+  }
+  .cardliste{
+    width: 100%;
+  }
     .seacrhBar {
         width: 480px;
         padding-left: 20px;
@@ -336,7 +359,7 @@ width: 420px ;
     }
 
     .seacrhBar input {
-        padding: 20px 13px;
+        padding: 16px 13px;
         font-size: 0.95rem;
     }
 

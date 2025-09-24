@@ -215,7 +215,7 @@ display: none;
 
 @media (min-width: 1369px) {
   .cardLeft {
-    width:18%; /* réduit la card gauche */
+    width:21%; /* réduit la card gauche */
   }
   .cardRight {
     width: calc(100% - 18% - 8px); /* s’ajuste quand cardLeft réduit */
@@ -375,6 +375,7 @@ user-select: none;
     width: 100%  !important;
   }
   
+
    .haut {
     flex-direction: column;  /* Empile bouton + search */
     align-items: stretch;
@@ -394,6 +395,7 @@ user-select: none;
   }
  
  .container{
+  margin-top: 100px !important;
   padding-left: 15px;
   padding-right: 15px !important;
  }

@@ -160,7 +160,11 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
              </div>
 <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
   <List sx={{ width: 280 }}>
-    <ListItem button sx={{ py: 2, px: 3 }}>
+    <ListItem 
+      button 
+      sx={{ py: 2, px: 3 }}
+      onClick={() => { handleMenuClick("Liste des Normes"); setDrawerOpen(false); }}
+    >
       <LibraryBooksIcon sx={{ marginRight: 2, color: "#44B700" }} />
       <ListItemText 
         primary="Liste des Normes" 
@@ -176,7 +180,11 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
 
     <Divider />
 
-    <ListItem button sx={{ py: 2, px: 3 }}>
+    <ListItem 
+      button 
+      sx={{ py: 2, px: 3 }}
+      onClick={() => { handleMenuClick("Normes"); setDrawerOpen(false); }}
+    >
       <DescriptionIcon sx={{ marginRight: 2, color: "#4B1616" }} />
       <ListItemText 
         primary="Normes" 
@@ -192,7 +200,11 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
 
     <Divider />
 
-    <ListItem button sx={{ py: 2, px: 3 }}>
+    <ListItem 
+      button 
+      sx={{ py: 2, px: 3 }}
+      onClick={() => { handleMenuClick("Secteur"); setDrawerOpen(false); }}
+    >
       <BusinessIcon sx={{ marginRight: 2, color: "#1B6979" }} />
       <ListItemText 
         primary="Secteur" 
@@ -223,7 +235,6 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
     </ListItem>
   </List>
 </Drawer>
-
 
 
 
