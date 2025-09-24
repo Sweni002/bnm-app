@@ -6,10 +6,10 @@ import Secteur  from './Secteur';
 import Bibio from './Bibio';
 import AjoutNorme from './ajout/AjoutNorme';
 
-function Site({ user }) {
+function Site({ user  ,onLogout}) {
   return (
     <div>
-      <Header user={user} />
+   <Header user={user} onLogout={onLogout} />
 
       {/* Contenu dynamique */}
       <Routes>

@@ -105,6 +105,7 @@ padding-right: 25px;
 }
 
 .comptes{
+  cursor: pointer;
   width: 15%;
   gap: 15px;
   display: flex;
@@ -131,6 +132,23 @@ padding-right: 25px;
   color: rgb(31, 31, 31);
 }
 
+
+.button1 button {
+   padding: 16px ;
+    padding-left: 23px;
+    padding-right: 20px;
+    outline: none;
+    border: none;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #1B6979;
+    box-shadow: 0 7px 7px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+.button1 button:hover {
+    background-color: #14535f;
+    
+}
 .burger {
   display: none; /* caché en desktop */
   font-size: 28px;

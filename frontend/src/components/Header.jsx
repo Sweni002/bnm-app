@@ -18,6 +18,8 @@ import BusinessIcon from "@mui/icons-material/Business";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Divider from "@mui/material/Divider";
 import { useNavigate } from 'react-router-dom';
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -79,13 +81,16 @@ function stringAvatar(name = "") {
   };
 }
 
-function Header({ user }) {
+function Header({ user  , onLogout }) {
     const [open, setOpen] = React.useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 const [activeMenu, setActiveMenu] = useState("Liste des Normes");
   const navigate = useNavigate();
-    const toggleDrawer = (open) => (event) => {
+    const fullName = user?.name || "Utilisateur";
+  const role = user?.role || "Visiteur";
+const [menuAnchorEl1, setMenuAnchorEl1] = useState(null);
+   const toggleDrawer = (open) => (event) => {
     if (
       event.type === "keydown" &&
       (event.key === "Tab" || event.key === "Shift")
@@ -94,6 +99,12 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
     }
     setDrawerOpen(open);
   };
+
+  const menuItems = [
+  { label: "Liste des Normes", roles: ["admin", "client"] },
+  { label: "Normes", roles: ["admin"] },
+  { label: "Secteur", roles: ["admin"] },
+];
 
     const handleMenuClick = (item) => {
     setActiveMenu(item);
@@ -106,6 +117,27 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
       navigate("/secteur");
     }
   };
+
+   const handleAvatarClick = (event) => {
+    setMenuAnchorEl1(event.currentTarget); // ouvre le menu
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl1(null); // ferme le menu
+  };
+
+   const handleLogout = () => {
+    // Supprime le token et l'utilisateur du localStorage
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
+
+    // Ferme le menu
+    handleMenuClose();
+
+    // Appelle la fonction de logout parent
+    onLogout?.();
+  };
+
   return (
     <>
    
@@ -115,25 +147,26 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
    <img src={Logo} alt="" />
  
       </div>
-      <div className={styles.menu}>
-   <ul>
-  {["Liste des Normes", "Normes", "Secteur"].map((item) => (
-    <li
-      key={item}
-      className={activeMenu === item ? styles.activeMenu : ""}
-        onClick={() => handleMenuClick(item)}
-    >
-      {item}
-    </li>
-  ))}
-</ul>
+  <div className={styles.menu}>
+  <ul>
+    {menuItems
+      .filter(item => item.roles.includes(role)) // <-- filtrage par rôle
+      .map((item) => (
+        <li
+          key={item.label}
+          className={activeMenu === item.label ? styles.activeMenu : ""}
+          onClick={() => handleMenuClick(item.label)}
+        >
+          {item.label}
+        </li>
+      ))}
+  </ul>
+</div>
 
-     </div>
-
-   <div className={styles.comptes}> 
+   <div className={styles.comptes}  onClick={handleAvatarClick}> 
       <div className={styles.text}>
-  <h3>Nisedralaza</h3>
-  <label htmlFor="">Admin</label>
+  <h3>{fullName}</h3>
+  <label htmlFor="">{role}</label>
       </div>
      <StyledBadge
             overlap="circular"
@@ -141,7 +174,7 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
             variant="dot"
           >
             <Avatar
-              {...stringAvatar( "Seni")}
+               {...stringAvatar(fullName)}
               sx={{
                 width: 58,
                 height: 59,
@@ -152,12 +185,53 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
             />
           </StyledBadge>  
             </div>
-             <div className={styles.burger}>
-      <IconButton size='large' edge="start" color='inherit' onClick={toggleDrawer(true)}>
- <i class="fa-solid fa-bars-staggered"  ></i>
+             <Menu
+          anchorEl={menuAnchorEl1}
+          open={Boolean(menuAnchorEl1)}
+          onClose={handleMenuClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          PaperProps={{
+            sx: {
+              borderRadius: 3,
+              mt: 1,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              minWidth: 120,
+              px: 3, // horizontal padding
+              py: 3, // vertical padding
+            },
+          }}
+        >
+          <div className={styles.button1}>
+            <button onClick={handleLogout}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 11,
+                  color: "white",
+                  fontSize: 18,
+                }}
+              >
+                <i className="fa-solid fa-right-from-bracket"></i>
+                <span>Se deconnecter</span>
+              </div>
+            </button>
+          </div>
+        </Menu>
+        {role === "admin" && (
+  <div className={styles.burger}>
+    <IconButton
+      size="large"
+      edge="start"
+      color="inherit"
+      onClick={toggleDrawer(true)}
+    >
+      <i className="fa-solid fa-bars-staggered"></i>
+    </IconButton>
+  </div>
+)}
 
-      </IconButton>
-             </div>
 <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
   <List sx={{ width: 280 }}>
     <ListItem 
@@ -222,16 +296,8 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
 
     <ListItem sx={{ py: 2, px: 3 }}>
       <AccountCircleIcon sx={{ marginRight: 2, color: "#222" }} />
-      <ListItemText 
-        primary="Nisedralaza (Admin)" 
-        primaryTypographyProps={{ 
-          sx: { 
-            textTransform: "uppercase", 
-            fontWeight: "bold",
-            fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif"
-          } 
-        }} 
-      />
+         <ListItemText primary={`${fullName} (${role})`} primaryTypographyProps={{ sx: { textTransform: "uppercase", fontWeight: "bold", fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif" } }} />
+  
     </ListItem>
   </List>
 </Drawer>

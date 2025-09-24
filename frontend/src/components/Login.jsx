@@ -11,9 +11,12 @@ import Alert from '@mui/material/Alert';
 import Logo from '../assets/logo.png'
 import { Spin } from 'antd';
 import Typography from '@mui/material/Typography';
+import { useNavigate } from 'react-router-dom';
 
 
 function Login({ onLogin }) {
+    const navigate = useNavigate();
+
   const [username, setUsername] = useState('');
  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -32,28 +35,38 @@ setLoading(true)
     if (!username) {
       setUsernameError(true);
       hasError = true;
+   setLoading(false);
+
     } else {
       setUsernameError(false);
+   setLoading(false);
+
     }
 
     if (!password) {
       setPasswordError(true);
+   setLoading(false);
+
       hasError = true;
     } else {
       setPasswordError(false);
+   setLoading(false);
+
     }
 
     if (!hasError) {
 
       setError(false);
-      setLoading(true);
-        handleLogin(username, password); // ← ici on appelle l'API
-
+         handleLogin(username, password); // ← ici on appelle l'API
+   setLoading(false);
+  
     } else {
-      setError(true);
+      setError(true)
+   setLoading(false);
+      
     }
   };
-  const handleLogin = async (username, password) => {
+const handleLogin = async (username, password) => {
   setLoading(true);
   setErrorMsg(false);
 
@@ -66,27 +79,33 @@ setLoading(true)
       body: JSON.stringify({ username, password }),
     });
 
-    const data = await response.json();
+    const data = await response.json(); // Lire le body une seule fois
 
-    if (!response.ok) {
-      // Si erreur, afficher le message
-      setErrorMsg(data.detail || "Nom d'utilisateur ou mot de passe incorrect");
-      setLoading(false);
-      return;
-    }
+if (!response.ok) {
+  setErrorMsg(data.message || "Nom d'utilisateur ou mot de passe incorrect");
+  setLoading(false);
+  return;
+}
 
     // ✅ Login réussi
     localStorage.setItem("access_token", data.data.access_token);
-    localStorage.setItem("role", data.data.role);
+  localStorage.setItem("user", JSON.stringify({ name: username, role: data.data.role }));
+console.log(data)
+onLogin?.({ role: data.data.role, name: username });
 
-    onLogin(data.data.role); // si tu veux faire une redirection ou changer l'état parent
+
+  navigate("/list_norme");
+
+
     setLoading(false);
+
   } catch (err) {
     console.error(err);
     setErrorMsg("Erreur serveur, veuillez réessayer.");
     setLoading(false);
   }
 };
+
 
 
   return (
@@ -103,7 +122,7 @@ setLoading(true)
     severity="error" 
     sx={{ fontSize: 17,  display: "flex" }}
   >
-    Erreur
+    {errorMsg}
   </Alert>
 )}
 
