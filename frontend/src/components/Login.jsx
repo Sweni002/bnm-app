@@ -44,13 +44,50 @@ setLoading(true)
     }
 
     if (!hasError) {
+
       setError(false);
       setLoading(true);
-     onLogin(username);
+        handleLogin(username, password); // ← ici on appelle l'API
+
     } else {
       setError(true);
     }
   };
+  const handleLogin = async (username, password) => {
+  setLoading(true);
+  setErrorMsg(false);
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Si erreur, afficher le message
+      setErrorMsg(data.detail || "Nom d'utilisateur ou mot de passe incorrect");
+      setLoading(false);
+      return;
+    }
+
+    // ✅ Login réussi
+    localStorage.setItem("access_token", data.data.access_token);
+    localStorage.setItem("role", data.data.role);
+
+    onLogin(data.data.role); // si tu veux faire une redirection ou changer l'état parent
+    setLoading(false);
+  } catch (err) {
+    console.error(err);
+    setErrorMsg("Erreur serveur, veuillez réessayer.");
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className={styles.container}>

@@ -27,15 +27,19 @@ function App() {
   }
 
   return (
-    <Router>
-      {!user ? (
-        <Login onLogin={handleLogin} />
-      ) : (
-        <Routes>
-          <Route path="/*" element={<Site user={user} />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      )}
+     <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route 
+          path="/*" 
+          element={
+            <PrivateRoute>
+              <Site />
+            </PrivateRoute>
+          } 
+        />
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
     </Router>
   );
 }
