@@ -17,3 +17,19 @@
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 
 }
+
+/* Fond du container principal du Viewer */
+.rpv-core__viewer {
+  background-color: transparent !important;
+}
+
+/* Fond des pages PDF */
+.rpv-core__page-layer {
+  background-color: transparent !important;
+}
+
+/* Fond du canvas PDF */
+.rpv-core__canvas-layer {
+  background-color: transparent !important;
+}
+

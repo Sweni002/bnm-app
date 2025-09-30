@@ -890,29 +890,47 @@ const handleConfirmDelete = () => {
   <CircularProgress color="inherit" />
 </Backdrop>
 <Backdrop
-  sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+  sx={{
+    color: '#fff',
+    zIndex: (theme) => theme.zIndex.drawer + 1,
+    display: 'flex',           
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100vw',
+    height: '100vh',
+    }}
   open={openPdfDialog}
 >
-  {/* Conteneur flex direct sans fond blanc */}
-  <div style={{ flex: 1, width: '100%', height: '100%', position: 'relative' }}>
+  <div style={{ position: 'relative', width: '60vw', height: '80vh', backgroundColor: 'transparent !important' }}>
     {/* Bouton fermer */}
     <IconButton
       onClick={handleClosePdf}
-      sx={{ position: "absolute", top: 8, right: 8, color: "white", zIndex: 10 }}
+      sx={{ position: "absolute", top: 16, right: 16, color: "white", zIndex: 10 }}
     >
       <CloseIcon />
     </IconButton>
 
-    {/* Zone PDF */}
+    {/* PDF */}
     {loadingPdf ? (
-      <CircularProgress color="inherit" sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+      <CircularProgress
+        color="inherit"
+        sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+      />
     ) : pdfUrl ? (
-      <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
-        <Viewer
-          fileUrl={pdfUrl}
-          plugins={[zoomPluginInstance]}
-          theme="dark" // optionnel pour fond sombre
-        />
+      <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js" >
+        <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+          <Viewer
+            fileUrl={pdfUrl}
+            plugins={[zoomPluginInstance]}
+            defaultScale={1.0}
+              theme={{
+        // Overwrite le style par défaut du viewer
+        themeVariables: {
+          'viewer-background-color': 'transparent',
+        },
+      }}
+          />
+        </div>
       </Worker>
     ) : (
       <Typography color="error" sx={{ textAlign: 'center', mt: 5 }}>Erreur de chargement du PDF</Typography>
