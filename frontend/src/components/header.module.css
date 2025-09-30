@@ -158,7 +158,7 @@ padding-right: 25px;
 }
 
 /* Mode mobile */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1000px) {
   .menu,
   .comptes {
     display: none; /* cacher menu + comptes */
@@ -173,4 +173,17 @@ padding-right: 25px;
   .burger i{
     font-size: 20px;
   }
+}
+
+
+
+@media (max-width : 1570px) 
+{
+  .menu{
+    width: 57%;
+  }
+  .menu ul li{
+    font-size: 1.0em;
+  }
+  
 }

@@ -12,18 +12,111 @@ import { EditOutlined, FileAddOutlined, FileOutlined } from '@ant-design/icons';
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useMediaQuery } from '@mui/material';
 import MobileActionButton from './Modal';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { authFetch, authFetchPdf } from './utils/authFetch';
+import { styled } from "@mui/material/styles";
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Snackbar from '@mui/material/Snackbar';
+import SnackbarContent from '@mui/material/SnackbarContent';
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from '@mui/material/CircularProgress';
+import DialogContentText from '@mui/material/DialogContentText';
+import Button from '@mui/material/Button';
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+//import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
+import { zoomPlugin } from '@react-pdf-viewer/zoom';
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/zoom/lib/styles/index.css';
+import { Modal } from '@mui/material';
+import { Document, Page } from 'react-pdf';
+import CloseIcon from '@mui/icons-material/Close';
+import { pdfjs } from 'react-pdf';
+
+// Configuration obligatoire pour Vite
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url,
+).toString();
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiPaper-root": {
+    backgroundColor: "white",
+    borderRadius: "25px",
+    padding: theme.spacing(2),
+    width: "100%",
+    maxWidth: "400px",
+  },
+}))
+
+const BootstrapDialogMobile = styled(Dialog)(({ theme }) => ({
+  "& .MuiPaper-root": {
+    backgroundColor: "white",
+    borderRadius: "15px",
+    padding: theme.spacing(1.7),
+    width: "100%",
+    maxWidth: "350px",
+  },
+}))
+
 
 function Norme() {
   const navigate=useNavigate()
   const [normes, setNormes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState("Photos");
+  const [selected, setSelected] = useState("Toutes");
   const scrollRef = useRef(null);
 const [showLeft, setShowLeft] = useState(false);
 const [showRight, setShowRight] = useState(false);
 const isMobile = useMediaQuery('(max-width:768px)');
 const isMobileSearch = useMediaQuery('(max-width:725px)');
+const [searchTerm, setSearchTerm] = useState("");
+const [filteredNormes, setFilteredNormes] = useState([]);
+const [secteurs, setSecteurs] = useState([]);
+const [loadingSecteurs, setLoadingSecteurs] = useState(true);
+const [searchTermSecteur, setSearchTermSecteur] = useState("");
+const [secteursAffiches, setSecteursAffiches] = useState([]); // secteurs filtrés pour l'affichage
+const [showAllSecteurs, setShowAllSecteurs] = useState(false);
+const [selectedSecteurId, setSelectedSecteurId] = useState(null);
+   const [loadingSupp, setLoadingSupp] = useState(false);
+const location = useLocation();
+const [code, setCode] = useState(null);
+const [nomN, setNomM] = useState(null);
+const [snackMessage, setSnackMessage] = useState('');
+const [snackError, setSnackError] = useState(false);
+const [openSnack, setOpenSnack] = useState(false);
+const [openPdfDialog, setOpenPdfDialog] = useState(false);
+const [pdfUrl, setPdfUrl] = useState("");
+const [loadingPdf, setLoadingPdf] = useState(false);
+const scrollBtnsRef = useRef({});
+const zoomPluginInstance = zoomPlugin();
+const { ZoomInButton, ZoomOutButton, CurrentScale } = zoomPluginInstance;
+
+ const [scrollPdf, setScrollPdf] = useState('paper');
+
+   const handleClickOpenPdf =  () => {
+    setOpenPdfDialog(true);
+  
+  };
+
+  const handleClosePdf = () => {
+    setOpenPdfDialog(false);
+    setLoadingPdf(false)
+    setNomM('')
+    setCode('')
+  };
+
+  const descriptionElementRef =useRef(null);
+  useEffect(() => {
+    if (openPdfDialog) {
+      const { current: descriptionElement } = descriptionElementRef;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openPdfDialog]);
 
 const updateScrollButtons = () => {
   if (scrollRef.current) {
@@ -57,7 +150,69 @@ const goAjout=()=>{
 }
 
 
-  
+const goModif=()=>{
+
+  navigate("/modifier_norme" )
+}
+
+useEffect(() => {
+  authFetch("http://localhost:8000/secteurs", {}, navigate)
+    .then(res => {
+      if (res?.success) {
+        setSecteurs(res.data);
+        setSecteursAffiches(res.data.slice(0, 10));
+      }
+      else{
+        setSnackMessage("Erreur")
+           setOpenSnack(true)
+      }
+    });
+}, []);
+// filtrage dynamique
+useEffect(() => {
+  let filtered = secteurs.filter(s =>
+    s.nom.toLowerCase().includes(searchTermSecteur.toLowerCase())
+  );
+
+  if (!showAllSecteurs) {
+    filtered = filtered.slice(0, 10); // si pas "voir plus", limite à 10
+  }
+
+  setSecteursAffiches(filtered);
+}, [searchTermSecteur, secteurs, showAllSecteurs]);
+
+useEffect(() => {
+  setLoading(true);
+  authFetch("http://localhost:8000/normes", {}, navigate)
+    .then(res => {
+      if (res?.success) {
+        const mappedData = res.data.map((n) => ({
+          key: n.id,
+          nom: n.nom,
+          dateEdition: n.date_creation?.split("T")[0] || "",
+          codification: n.codification,
+          fichier_pdf: n.fichier_pdf ,
+          nomsecteur: n.secteur?.nom || "",
+          idsecteur:n.secteur?.id || "",
+          nbrepage : n.nbrepage
+        }));
+        setNormes(mappedData);
+
+        console.log(mappedData)
+        setFilteredNormes(mappedData);
+         // ✅ réinitialiser la sélection
+        setSelected("Toutes");
+        setSelectedSecteurId(null);
+
+      } else {
+        setNormes([]);
+        setSnackMessage("Erreur du connexion")
+        setOpenSnack(true)
+        setFilteredNormes([]);
+      }
+      setLoading(false);
+    });
+}, []);
   const scroll = (direction) => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({
@@ -78,7 +233,7 @@ const fileTypes = [
   "ISO", "Autres"
 ]; // Ici on en a 50 pile
 
-  const columns = [
+  const columns1 = [
   {
     title: 'Nom',
     dataIndex: 'nom',
@@ -108,7 +263,7 @@ const fileTypes = [
       </Tooltip>
 
       <Tooltip title='Supprimer'>
-        <div className={styles.iconCircle}>
+        <div className={styles.iconCircle} onClick={() => handleDeleteClick(record)}>
           <IconButton aria-label="delete" size="small">
             <i className="fa-regular fa-trash-can" style={{ color: '#ff4d4f', fontSize: 18, cursor: 'pointer' }}></i>
           </IconButton>
@@ -152,60 +307,178 @@ const data = [
   },
 ];
 
+useEffect(() => {
+  if (searchTerm === "") {
+    setFilteredNormes(normes); // afficher tout
+  } else {
+    const filtered = normes.filter(n =>
+      n.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      n.codification?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      n.secteur?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredNormes(filtered);
+  }
+}, [searchTerm, normes]);
 
-const columnsMobile = [
-  { title: 'Codification', dataIndex: 'codification', key: 'codification' },
-  { title: 'Nom', dataIndex: 'nom', key: 'nom' },
+
+const columns = [
+  {
+    title: 'Nom',
+    dataIndex: 'nom',
+    key: 'nom',
+  },
+  {
+    title: 'Codification',
+    dataIndex: 'codification',
+    key: 'codification',
+  },
   {
     title: 'Date d’édition',
     dataIndex: 'dateEdition',
     key: 'dateEdition',
   },
-{
-  title: '',
-  key: 'actions',
-  width: 40,
-  render: (_, record) => <MobileActionButton record={record} />,
+ 
+  {
+    title: 'Secteur',
+    dataIndex: 'nomsecteur',
+    key: 'nomsecteur',
+  },
+  {
+    title: '',
+    key: 'actions',
+   render: (_, record) => (
+    <div className={styles.iconRow}>
+      <Tooltip title='Modifier'>
+        <div className={styles.iconCircle}  onClick={() => navigate('/modifier_norme', { state: { record } })}  >
+          <IconButton aria-label="edit" size="small">
+            <EditOutlined style={{ color: '#1B6979', fontSize: 18 }} />
+          </IconButton>
+        </div>
+      </Tooltip>
+
+      <Tooltip title='Supprimer'>
+        <div className={styles.iconCircle} onClick={() => handleDeleteClick(record)}> 
+          <IconButton aria-label="delete" size="small">
+            <i className="fa-regular fa-trash-can" style={{ color: '#ff4d4f', fontSize: 18, cursor: 'pointer' }}></i>
+          </IconButton>
+        </div>
+      </Tooltip>
+
+      <Tooltip title='Consulter'>
+        <div className={styles.iconCircle} onClick={() => openPdf(record)}>
+
+          <IconButton aria-label="view" size="small">
+            <FileAddOutlined style={{ color: '#44B700', fontSize: 18 }} />
+          </IconButton>
+        </div>
+      </Tooltip>
+    </div>
+  ),
+  },
+];
+const openPdf = async (normeId) => {
+  setLoadingPdf(true); // Affiche le Backdrop
+    handleClickOpenPdf(); // Ouvre le dialog après 4 secondes
+setNomM(normeId.nom)
+setCode(normeId.codification)
+  try {
+    const blob = await authFetchPdf(
+      `http://localhost:8000/normes/view_pdf/${normeId.key}`,
+      {},
+      navigate,
+      "blob"
+    );
+
+    if (blob) {
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
+    }
+  } catch (error) {
+    setSnackMessage("Erreur lors du chargement du PDF");
+    setSnackError(true);
+    setOpenSnack(true);
+  } finally {
+    setLoadingPdf(false); // Masque le Backdrop
+  }
+};
+
+
+// Colonnes mobile complètes
+const columnsMobile = [
+  { title: 'Nom', dataIndex: 'nom', key: 'nom' },
+  { title: 'Codification', dataIndex: 'codification', key: 'codification' },
+
+  { title: 'Secteur', dataIndex: 'nomsecteur', key: 'nomsecteur' },
+  {
+    title: '',
+    key: 'actions',
+    width: 40,
+    render: (_, record) => <MobileActionButton record={record}
+    onModifier={() => navigate('/modifier_norme', { state: { record } })} 
+      onConsulte={() => openPdf(record.key)}
+            onDelete={() => handleDeleteClickMobile(record)} // 👈 appelle le même handler
+ />,
+  },
+];
+
+const handleSecteurClick = (secteur) => {
+  setSelected(secteur.nom); // pour surligner
+  setSelectedSecteurId(secteur.id);
+
+  const token = localStorage.getItem("access_token");
+  fetch(`http://localhost:8000/normes/secteur/${secteur.id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      if (res.success) {
+        const mappedData = res.data.map((n) => ({
+         key: n.id,
+          nom: n.nom,
+          dateEdition: n.date_creation?.split("T")[0] || "",
+          codification: n.codification,
+          fichier_pdf: n.fichier_pdf ,
+          nomsecteur: n.secteur?.nom || "",
+          idsecteur:n.secteur?.id || "",
+          nbrepage : n.nbrepage
+        }));
+        setNormes(mappedData);
+        setFilteredNormes(mappedData);
+      }
+    })
+    .catch(console.error);
+
+     const btn = scrollBtnsRef.current[secteur.id];
+if (btn && scrollRef.current) {
+  btn.scrollIntoView({
+    behavior: 'smooth',
+    block: 'nearest',
+    inline: 'center'
+  });
 }
 
-];
+};
+const [confirmOpen, setConfirmOpen] = useState(false);
+const [recordToDelete, setRecordToDelete] = useState(null);
+const [confirmOpenMobile, setConfirmOpenMobile] = useState(false);
+
+const handleDeleteClick = (record) => {
+  setRecordToDelete(record);
+  setConfirmOpen(true);
+};
+
+const handleDeleteClickMobile = (record) => {
+  setRecordToDelete(record);
+  setConfirmOpenMobile(true);
+};
+
+const handleConfirmDelete = () => {
+     
+  };
 
 
-const secteurs = [
-  "Toutes",
-  "Agroalimentaire",
-  "Industrie",
-  "Informatique",
-  "Artisanat",
-  "Énergie",
-  "BTP et Construction",
-  "Transport et Logistique",
-  "Commerce et Distribution",
-  "Banque et Assurance",
-  "Télécommunications",
-  "Santé et Pharmaceutique",
-  "Éducation et Formation",
-  "Tourisme et Hôtellerie",
-  "Restauration",
-  "Immobilier",
-  "Mode et Textile",
-  "Médias et Communication",
-  "Audiovisuel et Cinéma",
-  "Arts et Culture",
-  "Environnement et Développement Durable",
-  "Agriculture",
-  "Pêche et Aquaculture",
-  "Automobile",
-  "Aéronautique et Spatial",
-  "Recherche et Innovation",
-  "Sécurité",
-  "Services aux Entreprises",
-  "Services aux Particuliers",
-  "Économie Sociale et Solidaire"
-];
 
 
-const secteursAffiches = secteurs.slice(0, 10); // seulement 10 premiers
 
 
   return (
@@ -242,6 +515,9 @@ const secteursAffiches = secteurs.slice(0, 10); // seulement 10 premiers
       {/* Liste des options */}
    <Box sx={{ mb: 3 ,mt :3}}>
   <TextField
+   value={searchTermSecteur}
+  onChange={(e) => setSearchTermSecteur(e.target.value)}
+
  placeholder='Rechercher un secteur'
     variant="outlined"
     size="small"
@@ -269,13 +545,63 @@ const secteursAffiches = secteurs.slice(0, 10); // seulement 10 premiers
     }}
   />
 </Box>
+{/* RadioGroup */}
 <RadioGroup value={selected} onChange={handleChange} sx={{ pl: 2, color: "gray" }}>
-  {secteursAffiches.map((secteur, index) => (
+
     <FormControlLabel
-      key={index}
-      value={secteur}
+    value="Toutes"
+    control={<Radio />}
+    label="Toutes"
+    onClick={() => {
+      setSelected("Toutes");
+      setSelectedSecteurId(null);
+
+      const token = localStorage.getItem("access_token");
+      fetch("http://localhost:8000/normes", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.success) {
+            const mappedData = res.data.map((n) => ({
+             key: n.id,
+          nom: n.nom,
+          dateEdition: n.date_creation?.split("T")[0] || "",
+          codification: n.codification,
+          fichier_pdf: n.fichier_pdf ,
+          nomsecteur: n.secteur?.nom || "",
+          idsecteur:n.secteur?.id || "",
+          nbrepage : n.nbrepage
+            }));
+            console.log("triage : " , mappedData)
+            setNormes(mappedData);
+            setFilteredNormes(mappedData);
+          }
+        })
+
+        .catch(console.error);
+    }}
+    sx={{
+      userSelect: "none",
+      borderRadius: 1.5,
+      px: 1,
+      my: 0.3,
+      cursor: "pointer",
+      transition: "all 0.2s ease",
+      "&:hover": { bgcolor: "#f0f0f0", transform: "scale(1.02)" },
+      "& .MuiFormControlLabel-label": {
+        fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
+      },
+    }}
+  />
+  {secteursAffiches.map(s => (
+    <FormControlLabel
+      onClick={() => handleSecteurClick(s)} // 👈 appel API
+
+      key={s.id}
+      value={s.nom}
       control={<Radio />}
-      label={secteur}
+      label={s.nom}
       sx={{
         userSelect: "none",
         borderRadius: 1.5,
@@ -283,43 +609,36 @@ const secteursAffiches = secteurs.slice(0, 10); // seulement 10 premiers
         my: 0.3,
         cursor: "pointer",
         transition: "all 0.2s ease",
-        "&:hover": {
-          bgcolor: "#f0f0f0",
-          transform: "scale(1.02)",
-        },
-        "& .MuiFormControlLabel-label": {
-          fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-        },
+        "&:hover": { bgcolor: "#f0f0f0", transform: "scale(1.02)" },
+        "& .MuiFormControlLabel-label": { fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif" },
       }}
     />
   ))}
 
-  <Box
-    sx={{
-      display: "flex",
-      alignItems: "center",
-      gap: 1,
-      mt: 1,
-      cursor: "pointer",
-      color: "#1B6979",
-      "&:hover": {
-        textDecoration: "underline",
-      },
-    }}
-    onClick={() => alert("Afficher tous les secteurs")}
-  >
-    <i className="fa-solid fa-plus" style={{ fontSize: 19 }}></i>
-    <Typography
-      variant="body2"
+ {searchTermSecteur === "" && secteurs.length > 10 && (
+    <Box
       sx={{
-        fontSize: 18,
-        fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
+        display: "flex",
+        alignItems: "center",
+        gap: 1,
+        mt: 1,
+        cursor: "pointer",
+        color: "#1B6979",
+        "&:hover": { textDecoration: "underline" },
       }}
+       onClick={() => setShowAllSecteurs(!showAllSecteurs)}
     >
-      Voir plus
-    </Typography>
-  </Box>
+     <i className={`fa-solid ${showAllSecteurs ? "fa-minus" : "fa-plus"}`} style={{ fontSize: 19 }}></i>
+      <Typography
+        variant="body2"
+        sx={{ fontSize: 18, fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif"  }}
+      >
+         {showAllSecteurs ? "Voir moins" : "Voir plus"}
+      </Typography>
+    </Box>
+  )}
 </RadioGroup>
+
 
     </Box>
 
@@ -331,7 +650,9 @@ const secteursAffiches = secteurs.slice(0, 10); // seulement 10 premiers
       {/* ✅ Search en haut si mobile */}
      {isMobileSearch && (
        <div className={styles.searchBarMobile} style={{marginTop :20}}>
-         <input type="text" placeholder="Rechercher ..." />
+         <input type="text" placeholder="Rechercher ..."   value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+ />
          <i className="fa-solid fa-magnifying-glass"></i>
        </div>
      )}
@@ -360,14 +681,51 @@ const secteursAffiches = secteurs.slice(0, 10); // seulement 10 premiers
 
   {/* Zone scrollable */}
   <div ref={scrollRef} className={styles.scrollBtns}>
-    {secteurs.map((item, index) => (
-      <button
-        key={index}
-        className={`${styles.scrollBtn} ${selected === item ? styles.activeBtn : ""}`}
-        onClick={() => setSelected(item)}
-      >
-        {item}
-      </button>
+    <button
+    key="toutes"
+    className={`${styles.scrollBtn} ${selected === "Toutes" ? styles.activeBtn : ""}`}
+    onClick={() => {
+      setSelected("Toutes");
+      setSelectedSecteurId(null);
+
+      const token = localStorage.getItem("access_token");
+      fetch("http://localhost:8000/normes", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.success) {
+            const mappedData = res.data.map((n) => ({
+              key: n.id,
+          nom: n.nom,
+          dateEdition: n.date_creation?.split("T")[0] || "",
+          codification: n.codification,
+          fichier_pdf: n.fichier_pdf ,
+          nomsecteur: n.secteur?.nom || "",
+          idsecteur:n.secteur?.id || "",
+          nbrepage : n.nbrepage
+            }));
+              console.log("triage : " , mappedData)
+       
+            setNormes(mappedData);
+            setFilteredNormes(mappedData);
+          }
+        })
+        .catch(console.error);
+    }}
+  >
+    Toutes
+  </button>
+      {secteurs.map((s) => (
+     <button
+      key={s.id}
+        ref={el => scrollBtnsRef.current[s.id] = el} // 👈 stocke le bouton
+
+      className={`${styles.scrollBtn} ${selected === s.nom ? styles.activeBtn : ""}`}
+       onClick={() => handleSecteurClick(s)} // 👈 appel API
+    >
+      {s.nom}   {/* ✅ afficher uniquement le nom */}
+    </button>
     ))}
   </div>
 
@@ -407,19 +765,27 @@ const secteursAffiches = secteurs.slice(0, 10); // seulement 10 premiers
    
 
   <div className={styles.searchBar}>
-  <input type="text" placeholder='Rechercher ...' />
+  <input type="text" placeholder='Rechercher ...'   value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+ />
   <i class="fa-solid fa-magnifying-glass"></i>
   </div>
    </div>
 
    <div className={styles.bas}>
- <Table columns={isMobile ? columnsMobile : columns}
+<Spin spinning={loading}>
+ <Table
+  columns={isMobile ? columnsMobile : columns}
+  dataSource={filteredNormes}   // ✅ et non normes
+  pagination={{ pageSize:isMobile ? 20 :30  }}
+  rowClassName={() => styles.largeRow}
+  onHeaderRow={() => ({ className: styles.largeHeader })}
 
- dataSource={data}
-  pagination={{ pageSize: 5 }} 
-   rowClassName={() => styles.largeRow}
-            onHeaderRow={() => ({ className: styles.largeHeader })}   scroll={{ y: 400 }} 
-     />
+  scroll={{ y: 400 }}
+/>
+
+</Spin>
+
 
    </div>
    
@@ -432,6 +798,128 @@ const secteursAffiches = secteurs.slice(0, 10); // seulement 10 premiers
               <i className="fa-solid fa-plus"></i>
             </div>
 </div>
+   <Snackbar
+  open={openSnack}
+  autoHideDuration={4000}
+  onClose={() => setOpenSnack(false)}
+  anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+>
+  <SnackbarContent
+    sx={{
+      p: 1,
+      px : 3,
+      fontSize: '17px',
+      color: 'white'
+    }}
+    message={<span>{snackMessage}</span>}
+  />
+</Snackbar>
+ <BootstrapDialogMobile
+        onClose={() => setConfirmOpenMobile(false)}
+             aria-labelledby="customized-dialog-title"
+        open={confirmOpenMobile}
+        
+      >
+        
+        <div   className={styles.dial} style={{margin :10 ,display  :"flex" , flexDirection :"column" ,
+          alignItems :"flex-start" ,justifyContent :"center" ,gap : 20
+        }}>
+  <h3 style={{fontSize : 22}}>Suppression...</h3>
+ <label htmlFor="id
+     " style={{fontSize : 16 ,color :"#676767"}}>Voulez-vous vraiment supprimer cette norme ?
+  
+      </label> 
+      <div  className={styles.supp}>
+        <div className={styles.supp1}>
+  <button   onClick={(()=>setConfirmOpenMobile(false))} >Non</button>
+
+        </div>
+  <div className={styles.supp2}>
+    <button   onClick={handleConfirmDelete}
+   >          {loadingSupp ? (
+      <Spin size="small" />
+    ) : "Oui"}
+
+   </button>
+     
+  </div>
+
+      </div>
+        </div>
+    
+        </BootstrapDialogMobile>
+
+         <BootstrapDialog
+        onClose={() => setConfirmOpen(false)}
+             aria-labelledby="customized-dialog-title"
+        open={confirmOpen}
+        
+      >
+        
+        <div   className={styles.dial} style={{margin :10 ,display  :"flex" , flexDirection :"column" ,
+          alignItems :"flex-start" ,justifyContent :"center" ,gap : 20
+        }}>
+  <h3 style={{fontSize : 22}}>Suppression...</h3>
+ <label htmlFor="id
+     " style={{fontSize : 16 ,color :"#676767"}}>Voulez-vous vraiment supprimer cette norme ?
+  
+      </label> 
+      <div  className={styles.supp}>
+        <div className={styles.supp1}>
+  <button   onClick={(()=>setConfirmOpen(false))} >Non</button>
+
+        </div>
+  <div className={styles.supp2}>
+    <button   onClick={handleConfirmDelete}
+   >          {loadingSupp ? (
+      <Spin size="small" />
+    ) : "Oui"}
+
+   </button>
+     
+  </div>
+
+      </div>
+        </div>
+    
+        </BootstrapDialog>
+        <Backdrop
+  sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+  open={loadingPdf}  // s'affiche tant que le PDF n'est pas chargé
+>
+  <CircularProgress color="inherit" />
+</Backdrop>
+<Backdrop
+  sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+  open={openPdfDialog}
+>
+  {/* Conteneur flex direct sans fond blanc */}
+  <div style={{ flex: 1, width: '100%', height: '100%', position: 'relative' }}>
+    {/* Bouton fermer */}
+    <IconButton
+      onClick={handleClosePdf}
+      sx={{ position: "absolute", top: 8, right: 8, color: "white", zIndex: 10 }}
+    >
+      <CloseIcon />
+    </IconButton>
+
+    {/* Zone PDF */}
+    {loadingPdf ? (
+      <CircularProgress color="inherit" sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+    ) : pdfUrl ? (
+      <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
+        <Viewer
+          fileUrl={pdfUrl}
+          plugins={[zoomPluginInstance]}
+          theme="dark" // optionnel pour fond sombre
+        />
+      </Worker>
+    ) : (
+      <Typography color="error" sx={{ textAlign: 'center', mt: 5 }}>Erreur de chargement du PDF</Typography>
+    )}
+  </div>
+</Backdrop>
+
     </div>
   );
 }

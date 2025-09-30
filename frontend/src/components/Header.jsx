@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './header.module.css'; // module CSS pour le style
 import Logo from '../assets/logo.png'
 import Enhaut from '../assets/sary.jpg'
@@ -89,6 +89,19 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
   const navigate = useNavigate();
     const fullName = user?.name || "Utilisateur";
   const role = user?.role || "Visiteur";
+  const location = useLocation();
+
+
+  
+useEffect(() => {
+  if (location.pathname === "/norme") {
+    setActiveMenu("Normes");
+  } else if (location.pathname === "/list_norme") {
+    setActiveMenu("Liste des Normes");
+  } else if (location.pathname === "/secteur") {
+    setActiveMenu("Secteur");
+  }
+}, [location.pathname]);
 const [menuAnchorEl1, setMenuAnchorEl1] = useState(null);
    const toggleDrawer = (open) => (event) => {
     if (

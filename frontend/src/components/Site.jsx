@@ -5,6 +5,7 @@ import Norme from './Norme';
 import Secteur  from './Secteur';
 import Bibio from './Bibio';
 import AjoutNorme from './ajout/AjoutNorme';
+import Modifier from './modifier/Modifier';
 
 function Site({ user  ,onLogout}) {
   return (
@@ -16,6 +17,8 @@ function Site({ user  ,onLogout}) {
           <Route path="/list_norme" element={<Bibio />} />
         <Route path="/norme" element={<Norme />} />
          <Route path="/ajout_norme" element={<AjoutNorme/>} /> {/* nouvelle route */}
+   <Route path="/modifier_norme" element={<Modifier />} /> {/* nouvelle route */}
+   
    
         <Route path="/secteur" element={<Secteur />} />
            <Route path="*" element={<Navigate to="/list_norme" />} />

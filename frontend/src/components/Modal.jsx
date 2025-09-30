@@ -4,7 +4,7 @@ import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import { EditOutlined, FileAddOutlined, FileOutlined } from '@ant-design/icons';
 
-function MobileActionButton({ record }) {
+function MobileActionButton({ record ,onDelete ,onConsulte ,onModifier }) {
   const [open, setOpen] = useState(false);
 
   const toggleDrawer = (state) => {
@@ -12,13 +12,18 @@ function MobileActionButton({ record }) {
   };
 
   const handleEdit = () => {
-    alert(`Modifier ${record.nom}`);
+    onModifier()
+      toggleDrawer(false);
+  };
+
+  const handleConsulte = () => {
+  onConsulte()  
     toggleDrawer(false);
   };
 
   const handleDelete = () => {
-    alert(`Supprimer ${record.nom}`);
     toggleDrawer(false);
+    if (onDelete) onDelete(); // 👈 ouvre BootstrapDialog du parent
   };
 
   return (
@@ -60,7 +65,7 @@ function MobileActionButton({ record }) {
 
     <Box
             sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 1, py: 1.5, cursor: "pointer", borderRadius: 2, "&:hover": { bgcolor: "#ffecec" } }}
-            onClick={handleDelete}
+            onClick={handleConsulte}
           >
             <FileAddOutlined style={{ fontSize: 18  ,color :"#44B700"}} />
             <span>Consulter le fichier </span>
@@ -68,7 +73,7 @@ function MobileActionButton({ record }) {
           {/* Ligne Supprimer */}
           <Box
             sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 1, py: 1.5, cursor: "pointer", borderRadius: 2, color: "red", "&:hover": { bgcolor: "#ffecec" } }}
-            onClick={handleDelete}
+           onClick={handleDelete}
           >
             <i className="fa-regular fa-trash-can" style={{ fontSize: 18 }} />
             <span>Supprimer</span>

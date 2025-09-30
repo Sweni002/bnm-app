@@ -1,4 +1,8 @@
-/* norme.module.css */
+/* norme.module.css  */
+.rpv-core__viewer {
+    background-color: red !important;
+}
+
 
 .container {
   
@@ -198,13 +202,13 @@ display: none;
   align-items: center;
   justify-content: space-between;
   width: 70%;
-  gap: 0; /* par défaut aucun espace */
+  gap: 15px; /* par défaut aucun espace */
 }
 
 /* Quand la largeur est inférieure ou égale à 1390px */
 @media (max-width: 1390px) {
   .iconRow {
-    gap: 15px; /* espace entre les icônes */
+    gap: 0px; /* espace entre les icônes */
   }
 }
 
@@ -275,6 +279,15 @@ display: none;
   width: 100%;
 user-select: none;
 }
+.noCopy {
+  user-select: none;       /* empêche la sélection */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+  pointer-events: none;    /* bloque clic droit, drag & drop */
+}
+
 
 .scrollBtns {
   display: flex;
@@ -317,6 +330,52 @@ user-select: none;
   background-color: #f0f0f0;
 }
 
+.supp{
+  margin-top: 7px;
+  display: flex;
+  align-items: center;
+width: 100%;
+justify-content: flex-end;
+gap: 20px;
+
+
+}
+.supp1 button{
+  border:  none;
+  overflow: hidden;
+  padding: 15px;
+  font-size: 17px;
+  border-radius: 50%;
+  background-color: transparent;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.supp1 button:hover{
+ background-color: #e4f4f7;
+}
+
+.supp2 button{
+    border:  none;
+  overflow: hidden;
+  padding: 17px;
+  font-size: 18px;
+  border-radius: 50%;
+  background-color:transparent;
+  font-weight: bold;
+  cursor: pointer;
+  color:#4C8995;
+     transition: opacity 0.2s ease;
+}
+
+.supp2 button:hover{
+  background-color: #e4f4f7;
+}
+
+.supp2 button:active {
+  opacity: 0.6;
+}
+
 .scrollArrow.left {
   left: 0;
 }
@@ -337,7 +396,13 @@ user-select: none;
     border: 1px solid #e2e2e2;
      background-color: #fcfcfc;
       color: #1B6979; font-weight: 500; 
-      font-size: 15px; cursor: pointer; white-space: nowrap; transition: all 0.25s ease; } .scrollBtn:hover { background-color: rgba(27, 105, 121, 0.1); } .activeBtn { transition: all 0.25s ease; background-color: #1B6979; color: white; border-color: none; box-shadow: 0 3px 8px rgba(27, 105, 121, 0.3); } .activeBtn:hover{ color: #1B6979; background-color:#fcfcfc ; }
+      font-size: 15px; cursor: pointer; white-space: nowrap; transition: all 0.25s ease; } 
+      
+      
+      .scrollBtn:hover { background-color: rgba(27, 105, 121, 0.1); } 
+      
+      
+      .activeBtn { transition: all 0.25s ease; background-color: #1B6979; color: white; border-color: none; box-shadow: 0 3px 8px rgba(27, 105, 121, 0.3); } .activeBtn:hover{ color: #1B6979; background-color:#fcfcfc ; }
 
   .scrollContainer i{
     font-size: 17px;
@@ -371,6 +436,24 @@ user-select: none;
   transform: scale(0.9); /* feedback tactile */
 }
 @media (max-width: 768px) {
+
+  .supp{
+    margin-top:0px !important;
+  }
+  .supp1 button{
+    font-size: 1.0rem  !important;
+  
+  }
+  .dial label{
+    font-size: 1.0rem !important;
+  }
+  .dial h3{
+    font-size: 1.2rem !important;
+  }
+    .supp2 button{
+    font-size: 1.0rem  !important;
+  
+  }
   .cardRight {
     width: 100%  !important;
   }
@@ -511,4 +594,16 @@ display: flex;
     font-size: 12px;
   }
  
+}
+
+
+@media (max-width: 1308px) {
+
+  .cardLeft{
+    display: none !important;
+  }
+    .cardRight {
+    width: 100%  !important;
+  }
+  
 }

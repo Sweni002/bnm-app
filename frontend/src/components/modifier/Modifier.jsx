@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Breadcrumb, Card } from 'antd';
-import styles from './ajoutnorme.module.css';
+import styles from './modifier.module.css';
 import illustration from '../../assets/2.jpg'; // ton image PNG
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Popover from '@mui/material/Popover';
@@ -42,7 +42,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-const AjoutNorme = () => {
+const Modifier = () => {
       const navigate = useNavigate();
         const [menuAnchor, setMenuAnchor] = useState(null);
    
@@ -67,7 +67,8 @@ const [secteurs, setSecteurs] = useState([]);
 const [loading, setLoading] = useState(false);
 const [errorMsg, setErrorMsg] = useState("");
 const [nbPage, setNbPage] = useState(null);
-
+const { state } = useLocation();
+  const record = state?.record;
 const [openDialogSecteur, setOpenDialogSecteur] = useState(false);
 const handleOpenDialog = () => setOpenDialogSecteur(true);
 const handleCloseDialog = () => {
@@ -108,7 +109,50 @@ const handleFileChange = (e) => {
 
 const [nomNorme, setNomNorme] = useState("");
 const [codification, setCodification] = useState("");
+useEffect(() => {
+  if (record) {
+    setNomNorme(record.nom || "");
+    setCodification(record.codification || "");
+    setNbPage(record.nbrepage || "");
 
+    // --- gérer le fichier PDF existant ---
+    if (record.fichier_pdf) {
+      setSelectedFile({
+        name: record.fichier_pdf.split("/").pop(), // récupère le nom du fichier
+        url: record.fichier_pdf,                   // garde l'URL pour le téléchargement/preview
+      });
+    } else {
+      setSelectedFile(null);
+    }
+
+    setSelectedSecteur({
+      id: record.idsecteur,
+      nom: record.nomsecteur
+    });
+
+   if (record.dateEdition) {
+      // "Mai 2018" => new Date(2018, 4, 1)
+      const [moisStr, anneeStr] = record.dateEdition.split(" ");
+      const moisMap = {
+        "janvier": 0,
+        "février": 1,
+        "mars": 2,
+        "avril": 3,
+        "mai": 4,
+        "juin": 5,
+        "juillet": 6,
+        "août": 7,
+        "septembre": 8,
+        "octobre": 9,
+        "novembre": 10,
+        "décembre": 11
+      };
+      const mois = moisMap[moisStr.toLowerCase()] ?? 0;
+      const annee = parseInt(anneeStr, 10) || 2025;
+      setSelectedDate(new Date(annee, mois, 1));
+    }
+  }
+}, [record]);
 
 useEffect(() => {
   const fetchSecteurs = async () => {
@@ -267,7 +311,7 @@ const handleSecteur = (secteur, e) => {
     <div className={styles.container}>
       <Breadcrumb className={styles.breadcrumb}>
         <Breadcrumb.Item>Norme</Breadcrumb.Item>
-        <Breadcrumb.Item>Ajout</Breadcrumb.Item>
+        <Breadcrumb.Item>Modifier</Breadcrumb.Item>
       </Breadcrumb>
 
       <Card className={styles.card}>
@@ -782,4 +826,4 @@ value={codification}
   );
 };
 
-export default AjoutNorme;
+export default Modifier;
