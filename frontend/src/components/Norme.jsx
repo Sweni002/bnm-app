@@ -34,12 +34,14 @@ import { Modal } from '@mui/material';
 import { Document, Page } from 'react-pdf';
 import CloseIcon from '@mui/icons-material/Close';
 import { pdfjs } from 'react-pdf';
+import {   SpecialZoomLevel } from '@react-pdf-viewer/core';
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 
-// Configuration obligatoire pour Vite
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc =
+  'https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js';
+
+
+
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiPaper-root": {
@@ -91,8 +93,9 @@ const [openPdfDialog, setOpenPdfDialog] = useState(false);
 const [pdfUrl, setPdfUrl] = useState("");
 const [loadingPdf, setLoadingPdf] = useState(false);
 const scrollBtnsRef = useRef({});
-const zoomPluginInstance = zoomPlugin();
-const { ZoomInButton, ZoomOutButton, CurrentScale } = zoomPluginInstance;
+//const zoomPluginInstance = zoomPlugin();
+//const { ZoomInButton, ZoomOutButton, CurrentScale } = zoomPluginInstance;
+//const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
  const [scrollPdf, setScrollPdf] = useState('paper');
 
@@ -415,8 +418,8 @@ const columnsMobile = [
     width: 40,
     render: (_, record) => <MobileActionButton record={record}
     onModifier={() => navigate('/modifier_norme', { state: { record } })} 
-      onConsulte={() => openPdf(record.key)}
-            onDelete={() => handleDeleteClickMobile(record)} // 👈 appelle le même handler
+     onConsulte={() => openPdf(record)}
+         onDelete={() => handleDeleteClickMobile(record)} // 👈 appelle le même handler
  />,
   },
 ];
@@ -477,6 +480,12 @@ const handleConfirmDelete = () => {
   };
 
 
+const openFullscreen = () => {
+  const elem = document.getElementById("pdfViewer");
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  }
+};
 
 
 
@@ -883,60 +892,56 @@ const handleConfirmDelete = () => {
         </div>
     
         </BootstrapDialog>
-        <Backdrop
-  sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-  open={loadingPdf}  // s'affiche tant que le PDF n'est pas chargé
->
-  <CircularProgress color="inherit" />
-</Backdrop>
-<Backdrop
-  sx={{
-    color: '#fff',
-    zIndex: (theme) => theme.zIndex.drawer + 1,
-    display: 'flex',           
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100vw',
-    height: '100vh',
-    }}
+<Modal
   open={openPdfDialog}
->
-  <div style={{ position: 'relative', width: '60vw', height: '80vh', backgroundColor: 'transparent !important' }}>
-    {/* Bouton fermer */}
-    <IconButton
-      onClick={handleClosePdf}
-      sx={{ position: "absolute", top: 16, right: 16, color: "white", zIndex: 10 }}
-    >
-      <CloseIcon />
-    </IconButton>
+  onClose={handleClosePdf} // se déclenche sur clic à l’extérieur ou ESC
+  closeAfterTransition
 
-    {/* PDF */}
+>
+  
+  <Box
+    sx={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '90%',
+      maxWidth: 610,
+      height: '90vh',
+        backgroundColor: 'transparent', // <-- fond blanc pour PDF
+    borderRadius: 2,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+  >
+        <div style={{position :"absolute" ,top : -30 , zIndex:10 ,right : -100}}>
+
+
+     <IconButton onClick={handleClosePdf}>
+        <CloseIcon style={{color :"white"}}/>
+      </IconButton>
+          </div>
     {loadingPdf ? (
-      <CircularProgress
-        color="inherit"
-        sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-      />
+      <CircularProgress color="inherit" />
     ) : pdfUrl ? (
-      <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js" >
-        <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+      <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
+        <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
           <Viewer
             fileUrl={pdfUrl}
-            plugins={[zoomPluginInstance]}
-            defaultScale={1.0}
-              theme={{
-        // Overwrite le style par défaut du viewer
-        themeVariables: {
-          'viewer-background-color': 'transparent',
-        },
-      }}
+            theme="light"
+            defaultScale={SpecialZoomLevel.PageFit}
+            style={{ width: '100%', height: '100%' }}
           />
-        </div>
-      </Worker>
+        </Worker>
+      </div>
     ) : (
-      <Typography color="error" sx={{ textAlign: 'center', mt: 5 }}>Erreur de chargement du PDF</Typography>
+      <Typography color="error" sx={{ textAlign: 'center' }}>
+        Erreur de chargement du PDF
+      </Typography>
     )}
-  </div>
-</Backdrop>
+  </Box>
+</Modal>
 
     </div>
   );
