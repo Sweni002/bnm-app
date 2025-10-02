@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Breadcrumb, Card } from 'antd';
-import styles from './ajoutnorme.module.css';
+import styles from './ajoutsec.module.css';
 import illustration from '../../assets/2.jpg'; // ton image PNG
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
@@ -23,7 +23,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { styled } from "@mui/material/styles";
 import { Spin } from 'antd';
-
+import { fetchWithAuth } from '../utils/api';
+import Snackbar from '@mui/material/Snackbar';
+import CloseIcon from '@mui/icons-material/Close';
+import SnackbarContent from '@mui/material/SnackbarContent';
+ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { authFetch } from '../utils/authFetch';
 
 dayjs.locale('fr');
 
@@ -37,7 +42,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-const AjoutNorme = () => {
+const AjoutSecteur = () => {
       const navigate = useNavigate();
         const [menuAnchor, setMenuAnchor] = useState(null);
    
@@ -51,71 +56,163 @@ const [anneeAll, setAnneeAll] = useState(2025);
         const anchorRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchSecteur, setSearchSecteur] = useState("");
-  const [secteurs] = useState([
-    { idpers: 1, nom: "Agroalimentaire" },
-    { idpers: 2, nom: "Bâtiment" },
-    { idpers: 3, nom: "Énergie" },
-  ]);
+ const [formErrorMsg, setFormErrorMsg] = useState("");
+
   const [selectedSecteur, setSelectedSecteur] = useState(null);
-  const [loading] = useState(false);
+  const [openSnack, setOpenSnack] = useState(false);
   const [loadingBtn, setLoadingBtn] = useState(false);
-  const [errorMsg] = useState("");
+
 const secteursRef = useRef(null);
+const [secteurs, setSecteurs] = useState([]);
+const [loading, setLoading] = useState(false);
+const [errorMsg, setErrorMsg] = useState("");
+const [nbPage, setNbPage] = useState(null);
+
 const [openDialogSecteur, setOpenDialogSecteur] = useState(false);
 const handleOpenDialog = () => setOpenDialogSecteur(true);
 const handleCloseDialog = () => {
   setOpenDialogSecteur(false);
   setSearchSecteur('');
 };
-
 const [errors, setErrors] = useState({
   nom: "",
   codification: "",
+  secteur: "",
+  date: "",
+  fichier: "",
+  nbpage: "",
 });
-const [nomNorme, setNomNorme] = useState("");
+
+const [selectedFile, setSelectedFile] = useState(null);
+const fileInputRef = useRef(null);
+
+const handleFileClick = () => {
+  fileInputRef.current.click(); // ouvre l’explorateur de fichiers
+};
+
+
+
+const [loadingFile, setLoadingFile] = useState(false);
+const handleFileChange = (e) => {
+  if (e.target.files.length > 0) {
+    setLoadingFile(true);
+    const file = e.target.files[0];
+
+    setTimeout(() => {
+      setSelectedFile(file);
+      setLoadingFile(false);
+      setErrors(prev => ({ ...prev, fichier: "" })); // <-- supprime l'erreur dès qu'un fichier est choisi
+    }, 1000);
+  }
+};
+
+const [nomSec, setnomSec] = useState("");
 const [codification, setCodification] = useState("");
 
 
-const handleSubmit = (e) => {
+
+ const handleCloseSnack = (event, reason) => {
+  if (reason === 'clickaway') {
+    // Si on clique hors du snackbar, on ferme juste le snackbar, pas de navigation
+    setOpenSnack(false);
+    return;
+  }
+  // Si on ferme le snackbar avec le bouton "close" (croix), on ferme juste le snackbar
+  setOpenSnack(false);
+};
+const action = (
+  <>
+    <Button color="primary" size="medium" onClick={() => {
+        setOpenSnack(false);
+        navigate("/secteur"); // navigation seulement ici
+      }}
+      sx={{p : 1 ,fontSize : 17}}>
+       Voir
+    </Button>
+    <IconButton
+  size="small"
+  aria-label="close"
+  color="inherit"
+  onClick={handleCloseSnack}
+  sx={{
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.1)', // couleur au survol (exemple gris clair)
+      color: '#f44336', // changer la couleur de l'icône au hover (ex: rouge)
+    },
+    transition: 'background-color 0.3s, color 0.3s',
+  }}
+>
+  <CloseIcon fontSize="medium" />
+</IconButton>
+
+  </>
+);
+
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   // reset erreurs
-  setErrors({ nom: "", codification: "" });
+  setErrors({ nom: ""});
 
-  // valider les champs
   let hasError = false;
-  if (!nomNorme) {  // tu dois avoir un state pour le nom
-    setErrors(prev => ({ ...prev, nom: "Le nom de la norme est requis." }));
-    hasError = true;
-  }
-  if (!codification) { // idem pour codification
-    setErrors(prev => ({ ...prev, codification: "La codification est requise." }));
+
+  if (!nomSec) {
+    setErrors(prev => ({ ...prev, nom: "Le nom du secteur est requis." }));
     hasError = true;
   }
 
-  if (hasError) return; // stoppe l'envoi si erreur
+
+  if (hasError) return;
 
   setLoadingBtn(true);
 
-  // simuler une API
-  setTimeout(() => {
-    console.log("Formulaire sauvegardé !");
+  try {
+ 
+const data = await authFetch("http://localhost:8000/secteurs/", {
+  method: "POST",
+   body: JSON.stringify({ nom: nomSec.trim() }),
+
+}, navigate);
+
+
+    if (!data) return; // authFetch a déjà géré la redirection si 401
+console.log(data)
+    if (data.success ==false) {
+      setFormErrorMsg(data.message || "Erreur lors de l'ajout du secteur.");
+        setOpenSnack(true);
+
+    } else {
+      console.log(data.message)
+
+      setFormErrorMsg(data.message); // message du backend
+      setOpenSnack(true);
+
+  
+      setnomSec("");
+ 
+    }
+  } catch (err) {
+    console.error(err);
+    setFormErrorMsg("Erreur serveur, réessayez plus tard.");
+  } finally {
     setLoadingBtn(false);
-  }, 2000);
+  }
 };
 
 
 const handleSecteur = (secteur, e) => {
   e.stopPropagation(); // stop la propagation du clic
-  setSelectedSecteur(secteur.nom);
+   setSelectedSecteur(secteur); // stocke l’objet complet
+  setErrors(prev => ({ ...prev, secteur: "" })); // <-- supprime l'erreur
   setOpenDialogSecteur(false); // <-- fermer le dialog
   setSearchSecteur('');         // reset la recherche
 };
 
+
   return (
     <div className={styles.container}>
       <Breadcrumb className={styles.breadcrumb}>
-        <Breadcrumb.Item>Norme</Breadcrumb.Item>
+        <Breadcrumb.Item>Secteur</Breadcrumb.Item>
         <Breadcrumb.Item>Ajout</Breadcrumb.Item>
       </Breadcrumb>
 
@@ -139,11 +236,11 @@ const handleSecteur = (secteur, e) => {
           <div className={styles.formContainer}>
                <form className={styles.form}>
                 <div className={styles.norme}>
-                    <label htmlFor="">Nom de la norme</label>
+                    <label htmlFor="">Nom du secteur</label>
  <TextField
-         value={nomNorme}
+         value={nomSec}
     onChange={(e) => {
-    setNomNorme(e.target.value);
+    setnomSec(e.target.value);
     if (errors.nom) setErrors(prev => ({ ...prev, nom: "" })); // supprime l'erreur
   }}  error={!!errors.nom}
   helperText={errors.nom || ""} 
@@ -155,11 +252,11 @@ const handleSecteur = (secteur, e) => {
        sx={{
     mb: 2,
     "& .MuiInputBase-input": {
-      padding: "5px 1px",   // ✅ padding interne uniforme
+      padding: "11px 1px",   // ✅ padding interne uniforme
       fontSize: "1rem",
       fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
         "@media (max-width:600px)": {
-        padding: "5px 0px !important",   // mobile → réduit
+        padding: "8px 0px !important",   // mobile → réduit
        // texte plus petit
       },
     },
@@ -183,346 +280,7 @@ const handleSecteur = (secteur, e) => {
       />
            
                 </div>
-                  <div className={styles.norme}>
-                    <label htmlFor="">Codification</label>
-<TextField
-  onChange={(e) => {
-    setCodification(e.target.value);
-    if (errors.codification) setErrors(prev => ({ ...prev, codification: "" })); // supprime l'erreur
-  }}  error={!!errors.codification}
-  helperText={errors.codification || ""} 
-     
-   
-  placeholder="Entrez le codification"
-  variant="standard"
-  fullWidth
-  sx={{
-    mb: 2,
-    "& .MuiInputBase-input": {
-      padding: "5px 1px",   // ✅ padding interne uniforme
-      fontSize: "1rem",
-      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-         "@media (max-width:600px)": {
-        padding: "5px 0px !important",   // mobile → réduit
-       // texte plus petit
-      },
-    },
-    "& .MuiInputLabel-root": {
-      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-    },
-  }}
-     InputProps={{
-    endAdornment: errors.codification ? (
-      <InputAdornment position="end">
-        <i className="fa-solid fa-circle-exclamation" style={{ color: "red"  ,fontSize :"1.1rem "}}></i>
-      </InputAdornment>
-    ) : null,
-  }}
-  InputLabelProps={{
-    style: {
-      fontSize: "1.1rem",
-      letterSpacing: "1px",
-    },
-  }}
-/>
-
-           
-                </div>
-              <div className={styles.norme}>
-                    <label htmlFor="">Secteur</label>
-                    
-<div className={styles.secteurs} ref={secteursRef}  onClick={handleOpenDialog}>
-     <TextField
-     
-       value={selectedSecteur}      
-      placeholder='Cliquez ici'
-        variant="standard"
-        fullWidth
-        
-         sx={{
-    mb: 2,
-    "& .MuiInputBase-input": {
-      padding: "5px 1px",   // ✅ padding interne uniforme
-      fontSize: "1rem",
-      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-         "@media (max-width:600px)": {
-        padding: "5px 0px !important",   // mobile → réduit
-       // texte plus petit
-      },
-    },
-    "& .MuiInputLabel-root": {
-      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-    },
-  }}
-
-  InputLabelProps={{
-    style: {
-      fontSize: "1.1rem",
-      letterSpacing: "1px",
-    },
-  }}
-   InputProps={{
-    readOnly:true ,
-          endAdornment: (
-            <InputAdornment position="end">
-             
-           <IconButton size='small'>
-    <i
-    className={`fa-solid fa-chevron-down ${styles.chevronIcon} ${openDialogSecteur ? styles.chevronIconOpen : ''}`}
-  ></i>
-        
-                    </IconButton>
-
-        </InputAdornment>
-          ),
-      
-        }}
-  
-      />   
-</div>
-           <BootstrapDialog
-  open={openDialogSecteur}
-  onClose={handleCloseDialog}
->
-  <div className={styles.dialog}>
-    <input
-      type="text"
-      placeholder="Recherher une secteur"
-      value={searchSecteur}
-      onChange={(e) => setSearchSecteur(e.target.value)}
-    />
-    <i className="fa-solid fa-magnifying-glass"></i>
-  </div>
-
-  <div style={{ minHeight: 300, maxHeight: 400, overflowY: 'auto', padding: 18, marginTop: 10 }}>
-    {loading ? (
-      <p>Chargement...</p>
-    ) : errorMsg ? (
-      <p style={{ color: "red" }}>{errorMsg}</p>
-    ) : (
-      <div className={styles.liste}>
-     {secteurs
-  .filter((p) =>
-    `${p.nom}`.toLowerCase().includes(searchSecteur.toLowerCase())
-  )
-  .map((p) => (
-    <div
-      key={p.idpers}
-      className={styles.liste1}
-      onClick={(e) => handleSecteur(p, e)}
-      style={{ cursor: "pointer" }}
-    >
-      <div className={styles.liste2}>
-        <h4>{p.nom}</h4>
-      </div>
-  <i class="fa-solid fa-magnifying-glass-minus"></i>
-    </div>
-))}
-
-        {secteurs.length === 0 && <p>Aucun secteur trouvé.</p>}
-      </div>
-    )}
-  </div>
-</BootstrapDialog>
-
-   
-                </div> 
-
-<div className={styles.autres}>
- <div className={styles.norme}>
-                    <label htmlFor="">Fichier .pdf</label>
-<div className={styles.secteurs}>
-       <TextField
-             
-      placeholder='Choisir le fichier'
-        variant="standard"
-        fullWidth
-        
-         sx={{
-    mb: 2,
-    "& .MuiInputBase-input": {
-      padding: "5px 1px",   // ✅ padding interne uniforme
-      fontSize: "1rem",
-      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-         "@media (max-width:600px)": {
-        padding: "5px 0px !important",   // mobile → réduit
-       // texte plus petit
-      },
-    },
-    "& .MuiInputLabel-root": {
-      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-    },
-  }}
-  InputLabelProps={{
-    style: {
-      fontSize: "1.1rem",
-      letterSpacing: "1px",
-    },
-  }}
-   InputProps={{
-    readOnly :true ,
-          endAdornment: (
-            <InputAdornment position="end">
-        <IconButton size='small'>
-<i class="fa-solid fa-file-export"></i>
-        
-                    </IconButton>
-                         </InputAdornment>
-          ),
-      
-        }}
-     
-      /> 
-           
-</div>
-
-         
-   
-                </div> 
-                
-                 <div className={styles.norme}>
-                    <label htmlFor="">Nb de page</label>
-<div className={styles.secteurs}>
-      <TextField
-             
-      placeholder=''
-        variant="standard"
-        fullWidth
-        
-            sx={{
-    mb: 2,
-    "& .MuiInputBase-input": {
-      padding: "5px 1px",   // ✅ padding interne uniforme
-      fontSize: "1rem",
-      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-         "@media (max-width:600px)": {
-        padding: "5px 0px !important",   // mobile → réduit
-       // texte plus petit
-      },
-    },
-    "& .MuiInputLabel-root": {
-      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-    },
-  }}
-  InputLabelProps={{
-    style: {
-      fontSize: "1.1rem",
-      letterSpacing: "1px",
-    },
-  }}
-   InputProps={{
-    readOnly : true ,
-          endAdornment: (
-            <InputAdornment position="end">
-       <IconButton size='small'>
-<i class="fa-regular fa-file"></i>
-                    </IconButton>      </InputAdornment>
-          ),
-      
-        }}
     
-      /> 
-           
-</div>
-
-         
-   
-                </div> 
-</div>
-
-
-  <div className={styles.norme}>
-                    <label htmlFor="">Date d'edition</label>
-        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={frLocale}>
-  <div
-    className={styles.secteurs}
-    ref={anchorRef}
-    onClick={() => setOpen(true)}
-  >
-        <TextField
-          value={selectedDate
-    ? dayjs(selectedDate).format('MMMM YYYY')
-    : ''}   
-      placeholder='Choisir une date'
-        variant="standard"
-        fullWidth
-        
-         sx={{
-    mb: 2,
-    "& .MuiInputBase-input": {
-      padding: "5px 1px",   // ✅ padding interne uniforme
-      fontSize: "1rem",
-      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-         "@media (max-width:600px)": {
-        padding: "5px 0px !important",   // mobile → réduit
-       // texte plus petit
-      },
-    },
-    "& .MuiInputLabel-root": {
-      fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-    },
-  }}
-  InputLabelProps={{
-    style: {
-      fontSize: "1.1rem",
-      letterSpacing: "1px",
-    },
-  }}
-   InputProps={{
-    readOnly :true ,
-          endAdornment: (
-            <InputAdornment position="end">
- <IconButton size='small'>
-      <i className="fa-regular fa-calendar"></i>
-    </IconButton>
-                         </InputAdornment>
-          ),
-      
-        }}
-  /> 
-
-
-   
-  </div>
-
-<DatePicker
-  open={open1}
-  onClose={() => setOpen(false)}
-  views={['year', 'month']}
-  minDate={new Date('2000-01-01')}
-  maxDate={new Date('2030-12-31')}
-  value={selectedDate ? new Date(selectedDate) : null}
- onChange={(newValue) => {
-  if (!newValue) return;
-
-  const year = newValue.getFullYear();
-  const month = newValue.getMonth();
-
-  const newDate = new Date(year, month, 1);
-  setSelectedDate(newDate);
-  setAnneeAll(year);
-  setMoisAll(month + 1);
-
-  console.log(newDate);
-
-  // <-- ne pas fermer le picker ici
-  // setOpen(false);
-}}
-
-  slots={{ field: () => null }}
-  slotProps={{
-    popper: {
-      anchorEl: () => anchorRef.current,
-      placement: 'bottom-start',
-    },
-  }}
-/>
-
-</LocalizationProvider>
-
-   
-                </div> 
-               
    <Button
   
   fullWidth
@@ -561,8 +319,31 @@ const handleSecteur = (secteur, e) => {
           </div>
         </div>
       </Card>
+  <Snackbar
+  open={openSnack}
+  autoHideDuration={5000}
+  onClose={handleCloseSnack}
+  anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+>
+  <SnackbarContent
+    sx={{
+
+      p: 1,
+      px : 3,
+      fontSize: '17px',
+      boxShadow: '0px 4px 12px rgba(0,0,0,0.15)',
+      display: 'flex',
+      justifyContent: 'space-between',  // espace entre message et action
+      alignItems: 'center',
+      gap: 3, // espace entre éléments flex (message/action)
+    }}
+    message={<span style={{ marginRight: 8 }}>{formErrorMsg}</span>}
+    action={action}
+  />
+</Snackbar>
+
     </div>
   );
 };
 
-export default AjoutNorme;
+export default AjoutSecteur;

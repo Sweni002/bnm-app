@@ -36,6 +36,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { pdfjs } from 'react-pdf';
 import {   SpecialZoomLevel } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
+import { ThreeDot ,OrbitProgress } from 'react-loading-indicators';
 
 pdfjs.GlobalWorkerOptions.workerSrc =
   'https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js';
@@ -96,6 +97,31 @@ const scrollBtnsRef = useRef({});
 //const zoomPluginInstance = zoomPlugin();
 //const { ZoomInButton, ZoomOutButton, CurrentScale } = zoomPluginInstance;
 //const defaultLayoutPluginInstance = defaultLayoutPlugin();
+const pdfContentRef = useRef(null);
+
+useEffect(() => {
+  if (!openPdfDialog) return; // ne rien faire si le PDF n'est pas ouvert
+
+  const handleVisibilityChange = () => {
+    if (!document.hidden) {
+      // La fenêtre redevient visible
+      window.location.reload();
+    }
+  };
+
+  const handleWindowFocus = () => {
+    // La fenêtre reçoit le focus
+    window.location.reload();
+  };
+
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  window.addEventListener('focus', handleWindowFocus);
+
+  return () => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+    window.removeEventListener('focus', handleWindowFocus);
+  };
+}, [openPdfDialog]);
 
  const [scrollPdf, setScrollPdf] = useState('paper');
 
@@ -105,11 +131,15 @@ const scrollBtnsRef = useRef({});
   };
 
   const handleClosePdf = () => {
-    setOpenPdfDialog(false);
-    setLoadingPdf(false)
-    setNomM('')
-    setCode('')
-  };
+  if (pdfUrl) {
+    URL.revokeObjectURL(pdfUrl);
+  }
+  setPdfUrl("");
+  setOpenPdfDialog(false);
+  setLoadingPdf(false);
+  setNomM("");
+  setCode("");
+};
 
   const descriptionElementRef =useRef(null);
   useEffect(() => {
@@ -183,7 +213,6 @@ useEffect(() => {
 
   setSecteursAffiches(filtered);
 }, [searchTermSecteur, secteurs, showAllSecteurs]);
-
 useEffect(() => {
   setLoading(true);
   authFetch("http://localhost:8000/normes", {}, navigate)
@@ -196,25 +225,51 @@ useEffect(() => {
           codification: n.codification,
           fichier_pdf: n.fichier_pdf ,
           nomsecteur: n.secteur?.nom || "",
-          idsecteur:n.secteur?.id || "",
-          nbrepage : n.nbrepage
+          idsecteur: n.secteur?.id || "",
+          nbrepage: n.nbrepage
         }));
+
         setNormes(mappedData);
 
-        console.log(mappedData)
-        setFilteredNormes(mappedData);
-         // ✅ réinitialiser la sélection
-        setSelected("Toutes");
-        setSelectedSecteurId(null);
+        // Restaurer la recherche si elle existe
+        const savedSearch = sessionStorage.getItem("searchTermNorme") || "";
+        setSearchTerm(savedSearch);
 
+        // Appliquer le filtrage **immédiatement**
+        const filtered = savedSearch
+          ? mappedData.filter(n =>
+              n.nom.toLowerCase().includes(savedSearch.toLowerCase()) ||
+              n.codification?.toLowerCase().includes(savedSearch.toLowerCase()) ||
+              n.nomsecteur?.toLowerCase().includes(savedSearch.toLowerCase())
+            )
+          : mappedData;
+
+        setFilteredNormes(filtered);
       } else {
         setNormes([]);
-        setSnackMessage("Erreur du connexion")
-        setOpenSnack(true)
         setFilteredNormes([]);
+        setSnackMessage("Erreur du connexion");
+        setOpenSnack(true);
       }
       setLoading(false);
     });
+}, []);
+
+
+
+useEffect(() => {
+  const snackMsg = sessionStorage.getItem('snackMessage');
+  const snackErr = sessionStorage.getItem('snackError') === 'true';
+
+  if (snackMsg) {
+    setSnackMessage(snackMsg);
+    setSnackError(snackErr);
+    setOpenSnack(true);
+
+    // Nettoyage après affichage
+    sessionStorage.removeItem('snackMessage');
+    sessionStorage.removeItem('snackError');
+  }
 }, []);
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -236,55 +291,6 @@ const fileTypes = [
   "ISO", "Autres"
 ]; // Ici on en a 50 pile
 
-  const columns1 = [
-  {
-    title: 'Nom',
-    dataIndex: 'nom',
-    key: 'nom',
-  },
-  {
-    title: 'Date d’édition',
-    dataIndex: 'dateEdition',
-    key: 'dateEdition',
-  },
-  {
-    title: 'Type',
-    dataIndex: 'type',
-    key: 'type',
-  },
- {
-  title: '',
-  key: 'actions',
-  render: (text, record) => (
-    <div className={styles.iconRow}>
-      <Tooltip title='Modifier'>
-        <div className={styles.iconCircle}>
-          <IconButton aria-label="edit" size="small">
-            <EditOutlined style={{ color: '#1B6979', fontSize: 18 }} />
-          </IconButton>
-        </div>
-      </Tooltip>
-
-      <Tooltip title='Supprimer'>
-        <div className={styles.iconCircle} onClick={() => handleDeleteClick(record)}>
-          <IconButton aria-label="delete" size="small">
-            <i className="fa-regular fa-trash-can" style={{ color: '#ff4d4f', fontSize: 18, cursor: 'pointer' }}></i>
-          </IconButton>
-        </div>
-      </Tooltip>
-
-      <Tooltip title='Consulter'>
-        <div className={styles.iconCircle}>
-          <IconButton aria-label="view" size="small">
-            <FileAddOutlined style={{ color: '#44B700', fontSize: 18 }} />
-          </IconButton>
-        </div>
-      </Tooltip>
-    </div>
-  ),
-}
-
-];
 
 // Exemple de données
 const data = [
@@ -323,6 +329,33 @@ useEffect(() => {
   }
 }, [searchTerm, normes]);
 
+// À mettre dans ton composant ou dans un useEffect global
+useEffect(() => {
+  const handleBeforeUnload = () => {
+    sessionStorage.removeItem("searchTermNorme");
+    sessionStorage.removeItem("selectedSecteurId");
+    sessionStorage.removeItem("snackMessage");
+    sessionStorage.removeItem("snackError");
+  };
+
+  window.addEventListener("beforeunload", handleBeforeUnload);
+
+  return () => {
+    window.removeEventListener("beforeunload", handleBeforeUnload);
+  };
+}, []);
+
+
+useEffect(() => {
+  const savedSecteurId = sessionStorage.getItem("selectedSecteurId");
+  if (savedSecteurId) {
+    const secteur = secteurs.find(s => s.id === parseInt(savedSecteurId));
+    if (secteur) {
+      handleSecteurClick(secteur); // réapplique le filtre
+    }
+  }
+}, [secteurs]);
+
 
 const columns = [
   {
@@ -352,7 +385,12 @@ const columns = [
    render: (_, record) => (
     <div className={styles.iconRow}>
       <Tooltip title='Modifier'>
-        <div className={styles.iconCircle}  onClick={() => navigate('/modifier_norme', { state: { record } })}  >
+        <div className={styles.iconCircle}  onClick={() => {
+  sessionStorage.setItem("searchTermNorme", searchTerm); 
+  sessionStorage.setItem("selectedSecteurId", selectedSecteurId);// sauvegarde la recherche
+  navigate('/modifier_norme', { state: { record } });
+}}
+ >
           <IconButton aria-label="edit" size="small">
             <EditOutlined style={{ color: '#1B6979', fontSize: 18 }} />
           </IconButton>
@@ -475,9 +513,42 @@ const handleDeleteClickMobile = (record) => {
   setConfirmOpenMobile(true);
 };
 
-const handleConfirmDelete = () => {
-     
-  };
+const handleConfirmDelete = async () => {
+  if (!recordToDelete) return;
+  setLoadingSupp(true);
+
+  try {
+    const res = await authFetch(
+      `http://localhost:8000/normes/${recordToDelete.key}`,
+      { method: "DELETE" },
+      navigate
+    );
+
+    if (res?.success) {
+      // ✅ Retirer la norme supprimée de la liste affichée
+      setNormes(prev => prev.filter(n => n.key !== recordToDelete.key));
+      setFilteredNormes(prev => prev.filter(n => n.key !== recordToDelete.key));
+
+      setSnackMessage("Norme supprimée avec succès");
+      setSnackError(false);
+      setOpenSnack(true);
+    } else {
+      setSnackMessage(res?.message || "Erreur lors de la suppression");
+      setSnackError(true);
+      setOpenSnack(true);
+    }
+  } catch (error) {
+    setSnackMessage("Erreur réseau");
+    setSnackError(true);
+    setOpenSnack(true);
+  } finally {
+    setLoadingSupp(false);
+    setConfirmOpen(false);
+    setConfirmOpenMobile(false);
+    setRecordToDelete(null);
+  }
+};
+
 
 
 const openFullscreen = () => {
@@ -900,6 +971,7 @@ const openFullscreen = () => {
 >
   
   <Box
+   
     sx={{
       position: 'absolute',
       top: '50%',
@@ -915,7 +987,7 @@ const openFullscreen = () => {
       alignItems: 'center',
     }}
   >
-        <div style={{position :"absolute" ,top : -30 , zIndex:10 ,right : -100}}>
+        <div  className={styles.closeBtn}>
 
 
      <IconButton onClick={handleClosePdf}>
@@ -923,8 +995,9 @@ const openFullscreen = () => {
       </IconButton>
           </div>
     {loadingPdf ? (
-      <CircularProgress color="inherit" />
-    ) : pdfUrl ? (
+<OrbitProgress color={["#7ca4c8", "#a0bdd7", "#c4d6e6", "#e8eff5"]} />
+
+  ) : pdfUrl ? (
       <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
           <Viewer

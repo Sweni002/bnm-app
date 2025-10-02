@@ -67,6 +67,7 @@ const [secteurs, setSecteurs] = useState([]);
 const [loading, setLoading] = useState(false);
 const [errorMsg, setErrorMsg] = useState("");
 const [nbPage, setNbPage] = useState(null);
+
 const { state } = useLocation();
   const record = state?.record;
 const [openDialogSecteur, setOpenDialogSecteur] = useState(false);
@@ -248,47 +249,57 @@ const handleSubmit = async (e) => {
 
   setLoadingBtn(true);
 
+
   try {
-   const formData = new FormData();
-formData.append("codification", codification);
-formData.append("nom", nomNorme);
-formData.append("nbrepage", nbPage);
-  const mois = selectedDate.toLocaleString('fr-FR', { month: 'long' });
-  const annee = selectedDate.getFullYear();
-  const dateEditionText = `${mois.charAt(0).toUpperCase() + mois.slice(1)} ${annee}`;
+    const formData = new FormData();
+    formData.append("codification", codification);
+    formData.append("nom", nomNorme);
+    formData.append("nbrepage", nbPage);
 
-  formData.append("date_creation", dateEditionText);
+    const mois = selectedDate.toLocaleString('fr-FR', { month: 'long' });
+    const annee = selectedDate.getFullYear();
+    const dateEditionText = `${mois.charAt(0).toUpperCase() + mois.slice(1)} ${annee}`;
+    formData.append("date_creation", dateEditionText);
 
-formData.append("secteur_id", selectedSecteur.id);
-formData.append("fichier_pdf",selectedFile);
+    formData.append("secteur_id", selectedSecteur.id);
 
-// stocke l'id, pas le nom
-console.log(formData)
-
-const data = await authFetch("http://localhost:8000/normes/", {
-  method: "POST",
-  body: formData, // ✅ utiliser FormData
-}, navigate);
-
-
-    if (!data) return; // authFetch a déjà géré la redirection si 401
-
-    if (data.status_code && data.status_code !== 200) {
-      setFormErrorMsg(data.detail || "Erreur lors de l'ajout de la norme.");
-    } else {
-      console.log(data.message)
-
-      setFormErrorMsg(data.message); // message du backend
-      setOpenSnack(true);
-
-      // reset formulaire
-      setNomNorme("");
-      setCodification("");
-      setSelectedSecteur(null);
-      setSelectedDate(null);
-      setNbPage(null);
-      setSelectedFile(null);
+    if (selectedFile && selectedFile instanceof File) {
+      formData.append("fichier_pdf", selectedFile);
     }
+
+    if (!record.key) {
+      setFormErrorMsg("ID de la norme manquant pour la mise à jour.");
+      return;
+    }
+
+    const data = await authFetch(`http://localhost:8000/normes/${record.key}`, {
+      method: "PUT",
+      body: formData,
+    }, navigate);
+
+    if (!data) return;
+   console.log(data)
+    if (data.success === false) {
+    // ❌ si erreur, on affiche le message mais ne reset pas le formulaire ni ne redirige
+    setFormErrorMsg(data.message || "Erreur lors de la mise à jour de la norme");
+    setOpenSnack(true);
+  } else {
+      // succès : afficher message, rediriger et reset si nécessaire
+   setNomNorme("");
+    setCodification("");
+    setSelectedSecteur(null);
+    setSelectedDate(null);
+    setNbPage(null);
+    setSelectedFile(null);
+
+sessionStorage.setItem('snackMessage',data.message);
+sessionStorage.setItem('snackError', 'false');
+      // redirection après un petit délai pour voir le snackbar
+          
+        navigate("/norme");
+   
+    }
+
   } catch (err) {
     console.error(err);
     setFormErrorMsg("Erreur serveur, réessayez plus tard.");

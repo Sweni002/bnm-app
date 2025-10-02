@@ -9,6 +9,13 @@
    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 
 }
+
+.closeBtn{
+  position :absolute;
+  top : -30px ;
+   z-index:10  ;
+   right : -100px ;
+}
 h2{
   color: black;
 }
@@ -337,19 +344,54 @@ gap: 20px;
 
 
 }
-.supp1 button{
-  border:  none;
-  overflow: hidden;
+.supp1 button {
+  border: none;
   padding: 15px;
   font-size: 17px;
   border-radius: 50%;
-  background-color: transparent;
+  background-color: #ffffff; /* fond clair */
   font-weight: bold;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease; /* transition fluide */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* léger relief */
 }
 
-.supp1 button:hover{
- background-color: #e4f4f7;
+.supp1 button:hover {
+  background-color: #e4f4f7; /* couleur au hover */
+  transform: scale(1.05); /* léger agrandissement */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* ombre plus marquée */
+}
+
+.supp1 button:active {
+  background-color: #cceaf3; /* couleur lors du clic */
+  transform: scale(0.9); /* effet pressé */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* ombre réduite */
+}
+
+/* Effet ripple (optionnel mais stylé) */
+.supp1 button::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0);
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.supp1 button:focus::after,
+.supp2 button:focus::after ,
+.supp1 button:active::after {
+  transform: scale(2);
+  opacity: 1;
+  transition: transform 0.2s, opacity 0.2s;
 }
 
 .supp2 button{
@@ -463,7 +505,11 @@ gap: 20px;
      
     padding-bottom: 0 !important;
   }
-
+  .closeBtn{
+  top : -40px ;
+left: 50%;
+    right: 0px;
+  }
 
  .scrollBtns {
     padding-right: 0 !important;

@@ -143,7 +143,10 @@ const [menuAnchorEl1, setMenuAnchorEl1] = useState(null);
     // Supprime le token et l'utilisateur du localStorage
     localStorage.removeItem("access_token");
     localStorage.removeItem("user");
-
+  sessionStorage.removeItem("searchTermNorme");
+    sessionStorage.removeItem("selectedSecteurId");
+    sessionStorage.removeItem("snackMessage");
+    sessionStorage.removeItem("snackError");
     // Ferme le menu
     handleMenuClose();
 
