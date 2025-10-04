@@ -113,10 +113,10 @@ const [menuAnchorEl1, setMenuAnchorEl1] = useState(null);
     setDrawerOpen(open);
   };
 
-  const menuItems = [
-  { label: "Liste des Normes", roles: ["admin", "client"] },
-  { label: "Normes", roles: ["admin"] },
-  { label: "Secteur", roles: ["admin"] },
+const menuItems = [
+  { label: "Liste des Normes", roles: ["admin", "client"], icon: <LibraryBooksIcon sx={{ marginRight: 2, fontSize: 20, color: "#4B1616" }} /> },
+  { label: "Normes", roles: ["admin"], icon: <DescriptionIcon sx={{ marginRight: 2, fontSize: 20, color: "#4B1616" }} /> },
+  { label: "Secteur", roles: ["admin"], icon: <BusinessIcon sx={{ marginRight: 2, fontSize: 20, color: "#4B1616" }} /> },
 ];
 
     const handleMenuClick = (item) => {
@@ -166,14 +166,16 @@ const [menuAnchorEl1, setMenuAnchorEl1] = useState(null);
   <div className={styles.menu}>
   <ul>
     {menuItems
-      .filter(item => item.roles.includes(role)) // <-- filtrage par rôle
+      .filter(item => item.roles.includes(role))
       .map((item) => (
         <li
           key={item.label}
           className={activeMenu === item.label ? styles.activeMenu : ""}
           onClick={() => handleMenuClick(item.label)}
+          style={{ display: "flex", alignItems: "center", gap: "1px", cursor: "pointer" }}
         >
-          {item.label}
+          {item.icon}  {/* 👈 l’icône */}
+          <span>{item.label}</span>
         </li>
       ))}
   </ul>
