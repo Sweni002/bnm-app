@@ -1,0 +1,371 @@
+.container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 120px; /* pour header fixe */
+}
+
+.breadcrumb {
+  width: 90%;
+  max-width: 1000px;
+  margin-bottom: 20px;
+}
+
+.card {
+  width: 100%;
+  max-width: 720px; /* plus large pour deux colonnes */
+ padding: 0 30px 30px 30px;  /* haut = 0, droite/gauche = 30px, bas = 30px */
+  
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: 10px;
+}
+
+.chevronIcon {
+  transition: transform 0.3s ease; /* transition fluide de 0.3s */
+}
+
+.chevronIconOpen {
+  transform: rotate(180deg); /* rotation quand ouvert */
+}
+
+.cardContent {
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageContainer {
+  flex: 1;
+  user-select: none;
+  display: flex;
+  margin-top: 15px;
+  justify-content: center;
+  position: relative; /* nécessaire pour positionner le bouton */
+}
+
+.imageContainer img {
+  max-width: 100%;
+  height: 330px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* bouton retour flottant */
+.backBtn {
+  position: absolute !important;
+  top: 20px;
+  left: 30px;
+  z-index: 2;
+  font-size: 1.0rem;
+}
+
+
+
+
+/* Colonne droite : formulaire */
+.formContainer {
+  flex: 1;
+  padding-right: 30px;
+  width: 100%;
+}
+
+.form {
+    user-select: none;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 20px ;
+
+}
+
+.norme{
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding-bottom: 10px;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+.norme input {
+   font-size: 1rem;
+
+  border-radius: 10px;
+  outline: none;
+  box-shadow :none;
+  width: 100%;
+  
+}
+.norme input:hover{
+   
+}
+
+.norme label {
+    color: rgb(43, 42, 42);
+    font-size: 1.0rem;
+font-weight: bold;
+}
+
+.secteurs span {
+      font-size: 1.0rem;
+
+}
+.secteurs{
+    user-select: none;
+     border-radius: 10px;
+      width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+      cursor: pointer;
+}
+.secteurs button{
+
+  padding: 5px;
+}
+.secteurs i{
+    color: #1B6979;
+    font-size: 1.2rem !important;
+      transition: all 0.2s ease;
+}
+
+.secteurs:hover{
+    
+} 
+form button {
+  padding: 12px 15px;
+  font-size: 1rem;
+  background-color: #1B6979;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+
+form button:hover {
+  background-color: #14535f;
+}
+.autres {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    width: 100%;
+    gap : 20px ;
+    user-select: none;
+}
+
+.dialog {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    height:  67px;
+     padding-left: 1px;
+    background-color: transparent;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.dialog input {
+    width: 75%;
+    border: none;
+    padding: 0px;
+    font-size: 1.1rem;
+    background-color: transparent;
+     outline: none; /* empêche la bordure orange */
+  box-shadow: none;
+    
+}
+.dialog i{
+    color: #1B6979;
+    font-size: 23px;
+
+}
+
+.dialog:hover {
+    border: 2px solid #259eb6;
+}
+
+
+
+.liste2 h3:hover{
+   color: #1f7181; 
+}
+
+.liste2 p:hover{
+   color: #1f7181; 
+}
+.liste2{
+    display: flex;
+    flex-direction: column;
+    gap:  10px;
+    align-items: flex-start;
+    justify-content:center;
+     
+}
+.liste2 h4{
+    font-size: 1.0rem;
+    
+}
+.liste2 p{
+
+    font-size: 18px;
+    color: gray;
+}
+
+.liste1 i{
+  color: gray;
+    font-size: 1.0rem;
+      transition: all 0.3s ease;
+}
+
+.resultat{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+}
+
+.liste1{
+width: 98%;
+display: flex;
+align-items: center;
+
+justify-content: space-between;
+cursor: pointer;
+  margin-bottom: 30px; /* ou la valeur que tu souhaites */
+  transition: all 0.3s ease;
+}
+
+.liste1:hover {
+   transform: scale(1.1);
+  color: #e6f7f9; /* fond léger au survol */
+  color: #1f7181 !important; /* texte */
+}
+.liste1:hover i {
+  color: #1f7181; /* icône change de couleur avec le texte */
+  transform: scale(1.1); /* effet léger d’agrandissement */
+}
+
+/* Tablette */
+@media (max-width: 992px) {
+     .cardContent {
+  
+    gap: 15px;
+    
+      flex-direction: column;
+    align-items: center;  /* contenu aligné en haut/gauche */
+    justify-content: center;
+  }
+
+  .imageContainer img {
+    height: 260px; /* un peu plus petite */
+  }
+
+  .card {
+    width: 100%;
+     align-self: flex-start; /* card à gauche */
+  }
+      
+  .container {
+    margin-top: 90px !important;
+      align-items: center;   /* on centre le card */
+   justify-content: flex-start; /* aligner en haut */
+  }
+
+  .formContainer{
+    width: 100% !important;
+  }
+ 
+  
+  .norme {
+    width: 100% !important; /* formulaire et champs en pleine largeur */
+  }
+
+  .norme input {
+    width: 100% !important; /* input prend 100% */
+  }
+}
+
+@media (max-width: 520px) {
+
+    
+    .backBtn{
+        left: 15px ;
+        font-size: 1.1rem !important;
+    }
+
+    .dialog{
+   
+       height: 60px !important;
+        padding: 0;
+    }
+    .dialog i{
+        font-size: 1.2rem !important;
+    }
+    .dialog input {
+        font-size: 1.0rem !important;
+       
+    }
+    .liste2 h4{
+        font-size: 1.0rem !important;
+    }
+ .card {
+   padding-left: 5px;
+   padding-right: 5px;
+ 
+  }
+     
+  .formContainer {
+    padding-right: 0 !important;
+  }
+
+  .imageContainer img {
+    height: 200px; /* image réduite sur mobile */
+  }
+  .norme input{
+  padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    font-size: 0.8rem !important;
+  }
+  .norme label{
+    font-size: 0.9rem !important;
+  }
+  .secteurs  span {
+    font-size: 0.8rem !important;
+  }
+  .secteurs i{
+    font-size: 1.0rem !important;
+  }
+    .secteurs input{
+   padding-top: 14px !important;
+    padding-bottom: 14px !important;
+  }
+}
+
+/* Très petits écrans (ex. <400px) */
+@media (max-width: 400px) {
+  .imageContainer img {
+  
+    height: 160px; /* encore plus réduite */
+  }
+}
+
+
+@media (max-width: 695px) {
+.autres{
+    flex-direction: column;
+}
+}

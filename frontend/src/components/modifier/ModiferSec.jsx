@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Breadcrumb, Card } from 'antd';
-import styles from './ajoutsec.module.css';
+import styles from './modsec.module.css';
 import illustration from '../../assets/2.jpg'; // ton image PNG
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Popover from '@mui/material/Popover';
@@ -68,6 +68,8 @@ const [loading, setLoading] = useState(false);
 const [errorMsg, setErrorMsg] = useState("");
 const [nbPage, setNbPage] = useState(null);
 
+const { state } = useLocation();
+  const record = state?.record;
 const [openDialogSecteur, setOpenDialogSecteur] = useState(false);
 const handleOpenDialog = () => setOpenDialogSecteur(true);
 const handleCloseDialog = () => {
@@ -90,6 +92,16 @@ const handleFileClick = () => {
   fileInputRef.current.click(); // ouvre l’explorateur de fichiers
 };
 
+useEffect(() => {
+  if (record) {
+    setnomSec(record.nom|| "");
+   
+   
+
+    
+  
+  }
+}, [record]);
 
 
 const [loadingFile, setLoadingFile] = useState(false);
@@ -168,8 +180,8 @@ const handleSubmit = async (e) => {
 
   try {
  
-const data = await authFetch(" http://127.0.0.1:8000/secteurs/", {
-  method: "POST",
+const data = await authFetch(`http://127.0.0.1:8000/secteurs/${record.key}`, {
+  method: "PUT",
    body: JSON.stringify({ nom: nomSec.trim() }),
 
 }, navigate);
@@ -190,6 +202,11 @@ console.log(data)
   
       setnomSec("");
  
+sessionStorage.setItem('snackMessage',data.message);
+sessionStorage.setItem('snackError', 'false');
+      // redirection après un petit délai pour voir le snackbar
+          
+        navigate("/secteur");
     }
   } catch (err) {
     console.error(err);
@@ -213,7 +230,7 @@ const handleSecteur = (secteur, e) => {
     <div className={styles.container}>
       <Breadcrumb className={styles.breadcrumb}>
         <Breadcrumb.Item>Secteur</Breadcrumb.Item>
-        <Breadcrumb.Item>Ajout</Breadcrumb.Item>
+        <Breadcrumb.Item>Modifier</Breadcrumb.Item>
       </Breadcrumb>
 
       <Card className={styles.card}>

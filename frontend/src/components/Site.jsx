@@ -7,6 +7,7 @@ import Bibio from './Bibio';
 import AjoutNorme from './ajout/AjoutNorme';
 import Modifier from './modifier/Modifier';
 import AjoutSecteur from './ajout/AjoutSecteur';
+import ModiferSec from './modifier/ModiferSec';
 
 function Site({ user  ,onLogout}) {
   return (
@@ -19,7 +20,8 @@ function Site({ user  ,onLogout}) {
         <Route path="/norme" element={<Norme />} />
          <Route path="/ajout_norme" element={<AjoutNorme/>} /> {/* nouvelle route */}
    <Route path="/modifier_norme" element={<Modifier />} /> {/* nouvelle route */}
-   
+    <Route path="/modifier_secteur" element={<ModiferSec />} /> {/* nouvelle route */}
+  
    <Route path="/ajout_secteur" element={<AjoutSecteur />} /> {/* nouvelle route */}
    
         <Route path="/secteur" element={<Secteur />} />

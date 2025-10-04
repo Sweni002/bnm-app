@@ -78,6 +78,7 @@ const isMobileSearch = useMediaQuery('(max-width:725px)');
 const [searchTerm, setSearchTerm] = useState("");
 const [filteredsecteurs, setFilteredsecteurs] = useState([]);
 
+const [secteur, setSecteurs] = useState(true);
 const [loadingSecteurs, setLoadingSecteurs] = useState(true);
 const [searchTermSecteur, setSearchTermSecteur] = useState("");
 const [secteursAffiches, setSecteursAffiches] = useState([]); // secteurs filtrés pour l'affichage
@@ -189,7 +190,7 @@ const goModif=()=>{
 }
 
 useEffect(() => {
-  authFetch("http://localhost:8000/secteurs", {}, navigate)
+  authFetch(" http://127.0.0.1:8000/secteurs", {}, navigate)
     .then(res => {
       if (res?.success) {
         setSecteurs(res.data);
@@ -215,7 +216,7 @@ useEffect(() => {
 }, [searchTermSecteur, secteurs, showAllSecteurs]);
 useEffect(() => {
   setLoading(true);
-  authFetch("http://localhost:8000/secteurs", {}, navigate)
+  authFetch(" http://127.0.0.1:8000/secteurs", {}, navigate)
     .then(res => {
       if (res?.success) {
         const mappedData = res.data.map((n) => ({
@@ -321,10 +322,8 @@ useEffect(() => {
     setFilteredsecteurs(secteurs); // afficher tout
   } else {
     const filtered = secteurs.filter(n =>
-      n.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      n.codification?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      n.secteur?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+      n.nom.toLowerCase().includes(searchTerm.toLowerCase()) 
+        );
     setFilteredsecteurs(filtered);
   }
 }, [searchTerm, secteurs]);
@@ -359,7 +358,8 @@ useEffect(() => {
 
 const columns = [
   {
-    title: 'Nom',
+    
+    title: 'Nom du secteur',
     dataIndex: 'nom',
     key: 'nom',
   },
@@ -373,7 +373,7 @@ const columns = [
         <div className={styles.iconCircle}  onClick={() => {
   sessionStorage.setItem("searchTermNorme", searchTerm); 
   sessionStorage.setItem("selectedSecteurId", selectedSecteurId);// sauvegarde la recherche
-  navigate('/modifier_norme', { state: { record } });
+  navigate('/modifier_secteur', { state: { record } });
 }}
  >
           <IconButton aria-label="edit" size="small">
@@ -432,7 +432,7 @@ const columnsMobile = [
     key: 'actions',
     width: 40,
     render: (_, record) => <MobileActionButton record={record}
-    onModifier={() => navigate('/modifier_norme', { state: { record } })} 
+    onModifier={() => navigate('/modifier_secteur', { state: { record } })} 
      onConsulte={() => openPdf(record)}
          onDelete={() => handleDeleteClickMobile(record)} // 👈 appelle le même handler
  />,
@@ -506,7 +506,7 @@ const handleConfirmDelete = async () => {
       setsecteurs(prev => prev.filter(n => n.key !== recordToDelete.key));
       setFilteredsecteurs(prev => prev.filter(n => n.key !== recordToDelete.key));
 
-      setSnackMessage("Norme supprimée avec succès");
+      setSnackMessage(res.message);
       setSnackError(false);
       setOpenSnack(true);
     } else {
@@ -672,7 +672,7 @@ const openFullscreen = () => {
         }}>
   <h3 style={{fontSize : 22}}>Suppression...</h3>
  <label htmlFor="id
-     " style={{fontSize : 16 ,color :"#676767"}}>Voulez-vous vraiment supprimer cette norme ?
+     " style={{fontSize : 16 ,color :"#676767"}}>Voulez-vous vraiment supprimer cet secteur ?
   
       </label> 
       <div  className={styles.supp}>
