@@ -45,8 +45,8 @@ background-color: #f1f1f1;
   box-shadow: 0px 10px 10px  rgba(0, 0, 0, 0.1);
  
   gap: 20px;
-  width: 380px;
-
+  width: 100%;
+max-width: 380px;
   /* px fade-in du formulaire */
   animation: fadeInForm 1s ease forwards;
   opacity: 0;
@@ -168,6 +168,19 @@ padding: 25px;
 }
 
 
+
+
+
+}
+
+@media (max-width :1370px) {
+.container img{
+  width: 110px !important;
+  height: 100px !important;
+}
+.form{
+ gap :10px ;
+}
 
 }
 

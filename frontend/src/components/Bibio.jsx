@@ -5,7 +5,12 @@ import { Card, Row, Col, Statistic } from "antd";
 import { useMediaQuery } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-
+import { authFetch, authFetchPdf } from './utils/authFetch';
+import { useNavigate } from 'react-router-dom';
+import Snackbar from '@mui/material/Snackbar';
+import SnackbarContent from '@mui/material/SnackbarContent';
+import CardNorme
+ from './CardNorme';
 function AnimatedCounter({ end, duration = 2000 }) {
   const [count, setCount] = useState(0);
 
@@ -29,17 +34,87 @@ function AnimatedCounter({ end, duration = 2000 }) {
 }
 
 function Biblio() {
-       const [showContainer, setShowContainer] = useState(false);
+  const navigate = useNavigate();
+ const [normes, setNormes] = useState([]);
 
+const [pdfUrl, setPdfUrl] = useState(null);
+const [loadingPdf, setLoadingPdf] = useState(false);
+const [nomM, setNomM] = useState("");
+const [code, setCode] = useState("");
+const [openPdfDialog, setOpenPdfDialog] = useState(false);
+
+       const [showContainer, setShowContainer] = useState(false);
+ const [totalNormes, setTotalNormes] = useState(0);
+  const [totalSecteurs, setTotalSecteurs] = useState(0);
+const [snackMessage, setSnackMessage] = useState('');
+const [snackError, setSnackError] = useState(false);
+const [openSnack, setOpenSnack] = useState(false);
          const scrollRef = useRef(null);
        const [showLeft, setShowLeft] = useState(false);
        const [showRight, setShowRight] = useState(false);
       const [selected, setSelected] = useState("Photos");
 const [searchText, setSearchText] = useState('');
-
+const [secteurs, setSecteurs] = useState([]);
 const isMobile = useMediaQuery('(max-width:768px)');
 const isMobileSearch = useMediaQuery('(max-width:725px)');
+const [totalPrix, setTotalPrix] = useState(0);
 
+ useEffect(() => {
+    const fetchNormes = async () => {
+      try {
+        const res = await authFetch("http://localhost:8000/normes", {}, navigate);
+        if (res?.success) {
+          setNormes(res.data);
+        } else {
+          setSnackMessage("Erreur lors de la récupération des normes");
+          setOpenSnack(true);
+        }
+      } catch (err) {
+        console.error(err);
+        setSnackMessage("Erreur serveur");
+        setOpenSnack(true);
+      }
+    };
+    fetchNormes();
+  }, [navigate]);
+useEffect(() => {
+  authFetch("http://localhost:8000/secteurs", {}, navigate)
+    .then(res => {
+      if (res?.success) {
+        setSecteurs(res.data);
+           }
+      else{
+        setSnackMessage("Erreur")
+           setOpenSnack(true)
+      }
+    });
+}, []);
+
+const openPdf = async (norme) => {
+  setLoadingPdf(true);
+  handleClickOpenPdf();
+  setNomM(norme.nom);
+  setCode(norme.codification);
+  try {
+    const blob = await authFetchPdf(
+      `http://localhost:8000/normes/view_pdf/${norme.id}`, // ou norme.key selon ton backend
+      {},
+      navigate,
+      "blob"
+    );
+
+    if (blob) {
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
+    }
+  } catch (error) {
+    setSnackMessage("Erreur lors du chargement du PDF");
+    setSnackError(true);
+    setOpenSnack(true);
+  } finally {
+    setLoadingPdf(false);
+  }
+};
       const updateScrollButtons = () => {
         if (scrollRef.current) {
           const { scrollWidth, clientWidth, scrollLeft } = scrollRef.current;
@@ -65,7 +140,25 @@ const isMobileSearch = useMediaQuery('(max-width:725px)');
         };
       }, []);
       
-      
+        useEffect(() => {
+    const fetchTotals = async () => {
+      try {
+        const normesData = await authFetch("http://localhost:8000/normes/count", {}, navigate);
+        const secteursData = await authFetch("http://localhost:8000/secteurs/counts", {}, navigate);
+console.log("secteurs" , secteursData)
+        if (normesData?.success) setTotalNormes(normesData.data.total_normes);
+        if (secteursData?.success) setTotalSecteurs(secteursData.data.total_secteurs);
+
+        // Exemple fictif pour totalPrix (à adapter)
+        setTotalPrix(350000);
+
+      } catch (err) {
+        console.error("Erreur lors de la récupération des totaux :", err);
+      }
+    };
+
+    fetchTotals();
+  }, [navigate]);
       
         
         const scroll = (direction) => {
@@ -79,38 +172,6 @@ const isMobileSearch = useMediaQuery('(max-width:725px)');
         const handleChange = (event) => {
           setSelected(event.target.value);
         };
-  const secteurs = [
-  "Toutes",
-  "Agroalimentaire",
-  "Industrie",
-  "Informatique",
-  "Artisanat",
-  "Énergie",
-  "BTP et Construction",
-  "Transport et Logistique",
-  "Commerce et Distribution",
-  "Banque et Assurance",
-  "Télécommunications",
-  "Santé et Pharmaceutique",
-  "Éducation et Formation",
-  "Tourisme et Hôtellerie",
-  "Restauration",
-  "Immobilier",
-  "Mode et Textile",
-  "Médias et Communication",
-  "Audiovisuel et Cinéma",
-  "Arts et Culture",
-  "Environnement et Développement Durable",
-  "Agriculture",
-  "Pêche et Aquaculture",
-  "Automobile",
-  "Aéronautique et Spatial",
-  "Recherche et Innovation",
-  "Sécurité",
-  "Services aux Entreprises",
-  "Services aux Particuliers",
-  "Économie Sociale et Solidaire"
-];
 
 
   return (
@@ -126,12 +187,13 @@ const isMobileSearch = useMediaQuery('(max-width:725px)');
             {/* Texte centré dans l’image */}
             <div className={styles.overlay}>
                 <div className={styles.total}>
-      <AnimatedCounter end={120}  />
+         <AnimatedCounter end={totalNormes} />
+        
                 <h4>Normes malagasy</h4>
  
                 </div>
                 <div className={styles.total}>
-  <AnimatedCounter end={45} />
+  <AnimatedCounter end={totalSecteurs} />
  <h4>Secteurs</h4>
                 </div>
                    <div className={styles.total}>
@@ -195,15 +257,16 @@ const isMobileSearch = useMediaQuery('(max-width:725px)');
 
   {/* Zone scrollable */}
   <div ref={scrollRef} className={styles.scrollBtns}>
-    {secteurs.map((item, index) => (
-      <button
-        key={index}
-        className={`${styles.scrollBtn} ${selected === item ? styles.activeBtn : ""}`}
-        onClick={() => setSelected(item)}
-      >
-        {item}
-      </button>
-    ))}
+ {secteurs.map((item, index) => (
+  <button
+    key={item.id}
+    className={`${styles.scrollBtn} ${selected === item.nom ? styles.activeBtn : ""}`}
+    onClick={() => setSelected(item.nom)}
+  >
+    {item.nom}
+  </button>
+))}
+
   </div>
 
   {showRight && (
@@ -226,17 +289,46 @@ const isMobileSearch = useMediaQuery('(max-width:725px)');
   
 
            </div>
+ <div className={styles.listes}>
 
-           <div className={styles.listes}>
-  {[1, 2, 3, 4, 5].map((item) => (
-    <div key={item} className={styles.cardliste}>
-      <h3>Card {item}</h3>
-        </div>
+        <div className={styles.listes2}>
+ {normes
+  .filter((n) => n.nom.toLowerCase().includes(searchText.toLowerCase()))
+  .map((norme) => (
+    <CardNorme
+    navigate={navigate}
+      idnorme={norme.id}
+      images={norme.fichier_pdf || '/default.png'} // ton image ou icône PDF
+      nomnorme={norme.nom}
+      nomsecteur={norme.secteur?.nom || '—'}
+      dateEdition={norme.date_creation}
+      codification={norme.codification}
+      nbpages={norme.nbrepage}
+    />
   ))}
+
 </div>
+ </div>
+   
 
         </div>
       </div>
+         <Snackbar
+        open={openSnack}
+        autoHideDuration={4000}
+        onClose={() => setOpenSnack(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <SnackbarContent
+          sx={{
+            p: 1,
+            px : 3,
+            fontSize: '17px',
+            color: 'white'
+          }}
+          message={<span>{snackMessage}</span>}
+        />
+      </Snackbar>
     </div>
   );
 }

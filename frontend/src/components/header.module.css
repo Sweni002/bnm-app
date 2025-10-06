@@ -21,7 +21,7 @@
   position: fixed;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   user-select: none;
  padding-top: 15px ;
@@ -50,7 +50,7 @@ padding-right: 25px;
 }
   
 .menu{
-  width: 45%;
+  width: 60%;
 
 }
 .menu ul{
@@ -109,8 +109,17 @@ padding-right: 25px;
   width: 15%;
   gap: 15px;
   display: flex;
+  padding: 4px;
+  cursor: pointer;
   align-items: center;
   justify-content: center;
+
+  transition: color 0.25s ease;
+}
+.comptes:hover{
+  background-color:#d8dfe0 ;
+  border-radius: 6px;
+  
 }
 .comptes img{
    width: 110px;
@@ -173,17 +182,44 @@ padding-right: 25px;
   .burger i{
     font-size: 20px;
   }
+  .header{
+    justify-content: space-between;
+    padding-right: 0;
+  }
+ 
+
 }
 
 
 
 @media (max-width : 1570px) 
 {
-  .menu{
-    width: 57%;
+  .menu {
+
+    width: 70%;
+    
   }
   .menu ul li{
-    font-size: 1.0em;
+    font-size: 1.0rem;
+
   }
+
+  .menu ul{
+    justify-content:flex-start;
+
+    gap:105px ;
+  }
+ .text h3{
+  font-size:1.1rem !important;
+ }
+ .comptes{
+  gap: 8px;
+  width: 13%;
+ }
+  .comptes label{
+    font-size: 0.9rem;
+  }
+ 
   
+
 }
