@@ -9,12 +9,18 @@
    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 
 }
-
+.closeBtn:hover{
+  background-color:rgb(163, 79, 79) !important;
+}
 .closeBtn{
-  position :absolute;
-  top : -30px ;
-   z-index:10  ;
-   right : -100px ;
+    position: absolute;
+  bottom: auto;            /* enlève la position du haut */
+    top: -25px;   
+       /* place le bouton en bas */
+    left: auto;            /* centre horizontalement */
+    right: -1px;
+    z-index: 10;
+    background-color: #1B6979;
 }
 h2{
   color: black;
@@ -505,10 +511,12 @@ gap: 20px;
      
     padding-bottom: 0 !important;
   }
-  .closeBtn{
-  top : -40px ;
-left: 50%;
-    right: 0px;
+   .closeBtn{
+ top: auto;            /* enlève la position du haut */
+    bottom: -25px;         /* place le bouton en bas */
+    left: auto;            /* centre horizontalement */
+    right: 0%;
+    background-color: #1B6979;
   }
 
  .scrollBtns {

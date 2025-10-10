@@ -159,10 +159,12 @@ useEffect(() => {
   const fetchSecteurs = async () => {
     try {
       setLoading(true);
-      const data = await fetchWithAuth("http://localhost:8000/secteurs");
+      const data = await authFetch("/secteurs", {}, navigate);
 
-      if (data && data.data) {
-        setSecteurs(data.data); // API renvoie { data: [...] }
+      if (data?.success && data.data) {
+        setSecteurs(data.data); // API renvoie { success: true, data: [...] }
+      } else {
+        setErrorMsg("Erreur lors de la récupération des secteurs.");
       }
     } catch (err) {
       console.error("Erreur API:", err);
@@ -173,7 +175,8 @@ useEffect(() => {
   };
 
   fetchSecteurs();
-}, []);
+}, [navigate]);
+
 
  const handleCloseSnack = (event, reason) => {
   if (reason === 'clickaway') {
@@ -272,7 +275,7 @@ const handleSubmit = async (e) => {
       return;
     }
 
-    const data = await authFetch(`http://localhost:8000/normes/${record.key}`, {
+    const data = await authFetch(`/normes/${record.key}`, {
       method: "PUT",
       body: formData,
     }, navigate);

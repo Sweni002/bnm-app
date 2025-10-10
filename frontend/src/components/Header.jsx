@@ -91,6 +91,9 @@ const [activeMenu, setActiveMenu] = useState("Liste des Normes");
   const role = user?.role || "Visiteur";
   const location = useLocation();
 
+const [clientMenuAnchor, setClientMenuAnchor] = useState(null);
+const handleClientMenuOpen = (event) => setClientMenuAnchor(event.currentTarget);
+const handleClientMenuClose = () => setClientMenuAnchor(null);
 
   
 useEffect(() => {
@@ -114,7 +117,7 @@ const [menuAnchorEl1, setMenuAnchorEl1] = useState(null);
   };
 
 const menuItems = [
-  { label: "Liste des Normes", roles: ["admin", "client"], icon: <LibraryBooksIcon sx={{ marginRight: 2, fontSize: 20, color: "#4B1616" }} /> },
+  { label: "Liste des Normes", roles: ["admin"], icon: <LibraryBooksIcon sx={{ marginRight: 2, fontSize: 20, color: "#4B1616" }} /> },
   { label: "Normes", roles: ["admin"], icon: <DescriptionIcon sx={{ marginRight: 2, fontSize: 20, color: "#4B1616" }} /> },
   { label: "Secteur", roles: ["admin"], icon: <BusinessIcon sx={{ marginRight: 2, fontSize: 20, color: "#4B1616" }} /> },
 ];
@@ -237,8 +240,8 @@ const menuItems = [
             </button>
           </div>
         </Menu>
-        {role === "admin" && (
-  <div className={styles.burger}>
+    <div className={styles.burger}>
+  {role === "admin" ? (
     <IconButton
       size="large"
       edge="start"
@@ -247,78 +250,127 @@ const menuItems = [
     >
       <i className="fa-solid fa-bars-staggered"></i>
     </IconButton>
-  </div>
-)}
+  ) : (
+    <>
+      <IconButton
+        size="large"
+        edge="start"
+        color="inherit"
+        onClick={handleClientMenuOpen}
+      >
+        <i className="fa-solid fa-person-walking-arrow-right"></i>
+      </IconButton>
+
+      <Menu
+        anchorEl={clientMenuAnchor}
+        open={Boolean(clientMenuAnchor)}
+        onClose={handleClientMenuClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        PaperProps={{
+          sx: {
+            backgroundColor :"rgba(87, 86, 86)" ,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+           
+          },
+        }}
+      >
+          <MenuItem
+          onClick={() => {
+            handleLogout();
+            handleClientMenuClose();
+          }}
+          sx={{ color: "lightgray" }}
+        >
+          <i className="fa-solid fa-right-from-bracket" style={{ marginRight: 10 }}></i>
+          Se déconnecter
+        </MenuItem>
+      </Menu>
+    </>
+  )}
+</div>
+
 
 <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
-  <List sx={{ width: 280 }}>
+  <List sx={{ 
+    width: 280, 
+    display: "flex", 
+    flexDirection: "column", 
+    height: "100%" // nécessaire pour pousser le bouton en bas
+  }}>
+    <div>
+      <ListItem 
+        button 
+        sx={{ py: 2, px: 3 }}
+        onClick={() => { handleMenuClick("Liste des Normes"); setDrawerOpen(false); }}
+      >
+        <LibraryBooksIcon sx={{ marginRight: 2, color: "#44B700" }} />
+        <ListItemText 
+          primary="Liste des Normes" 
+          primaryTypographyProps={{ sx: { textTransform: "uppercase", fontWeight: "bold" } }} 
+        />
+      </ListItem>
+      <Divider />
+
+      <ListItem 
+        button 
+        sx={{ py: 2, px: 3 }}
+        onClick={() => { handleMenuClick("Normes"); setDrawerOpen(false); }}
+      >
+        <DescriptionIcon sx={{ marginRight: 2, color: "#4B1616" }} />
+        <ListItemText 
+          primary="Normes" 
+          primaryTypographyProps={{ sx: { textTransform: "uppercase", fontWeight: "bold" } }} 
+        />
+      </ListItem>
+      <Divider />
+
+      <ListItem 
+        button 
+        sx={{ py: 2, px: 3 }}
+        onClick={() => { handleMenuClick("Secteur"); setDrawerOpen(false); }}
+      >
+        <BusinessIcon sx={{ marginRight: 2, color: "#1B6979" }} />
+        <ListItemText 
+          primary="Secteur" 
+          primaryTypographyProps={{ sx: { textTransform: "uppercase", fontWeight: "bold" } }} 
+        />
+      </ListItem>
+      <Divider />
+
+      <ListItem sx={{ py: 2, px: 3 }}>
+        <AccountCircleIcon sx={{ marginRight: 2, color: "#222" }} />
+        <ListItemText 
+          primary={`${fullName} (${role})`} 
+          primaryTypographyProps={{ sx: { textTransform: "uppercase", fontWeight: "bold" } }} 
+        />
+      </ListItem>
+      <Divider />
+    </div>
+
+    {/* Bouton de déconnexion au bas */}
     <ListItem 
       button 
-      sx={{ py: 2, px: 3 }}
-      onClick={() => { handleMenuClick("Liste des Normes"); setDrawerOpen(false); }}
+      sx={{ 
+        py: 2, 
+        px: 3, 
+        backgroundColor: "rgb(243, 243, 243)", 
+        color: "gray", 
+        mt: "auto", 
+        borderRadius: 1 
+      }}
+      onClick={() => { handleLogout(); setDrawerOpen(false); }}
     >
-      <LibraryBooksIcon sx={{ marginRight: 2, color: "#44B700" }} />
+      <i className="fa-solid fa-right-from-bracket" style={{ marginRight: 10 }}></i>
       <ListItemText 
-        primary="Liste des Normes" 
-        primaryTypographyProps={{ 
-          sx: { 
-            textTransform: "uppercase", 
-            fontWeight: "bold",
-            fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif"
-          } 
-        }} 
+        primary="Se Déconnecter" 
+        primaryTypographyProps={{ sx: { textTransform: "uppercase", fontWeight: "bold", color: "gray" } }} 
       />
-    </ListItem>
-
-    <Divider />
-
-    <ListItem 
-      button 
-      sx={{ py: 2, px: 3 }}
-      onClick={() => { handleMenuClick("Normes"); setDrawerOpen(false); }}
-    >
-      <DescriptionIcon sx={{ marginRight: 2, color: "#4B1616" }} />
-      <ListItemText 
-        primary="Normes" 
-        primaryTypographyProps={{ 
-          sx: { 
-            textTransform: "uppercase", 
-            fontWeight: "bold",
-            fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif"
-          } 
-        }} 
-      />
-    </ListItem>
-
-    <Divider />
-
-    <ListItem 
-      button 
-      sx={{ py: 2, px: 3 }}
-      onClick={() => { handleMenuClick("Secteur"); setDrawerOpen(false); }}
-    >
-      <BusinessIcon sx={{ marginRight: 2, color: "#1B6979" }} />
-      <ListItemText 
-        primary="Secteur" 
-        primaryTypographyProps={{ 
-          sx: { 
-            textTransform: "uppercase", 
-            fontWeight: "bold",
-            fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif"
-          } 
-        }} 
-      />
-    </ListItem>
-
-    <Divider />
-
-    <ListItem sx={{ py: 2, px: 3 }}>
-      <AccountCircleIcon sx={{ marginRight: 2, color: "#222" }} />
-         <ListItemText primary={`${fullName} (${role})`} primaryTypographyProps={{ sx: { textTransform: "uppercase", fontWeight: "bold", fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif" } }} />
-  
     </ListItem>
   </List>
 </Drawer>
+
+
 
 
 

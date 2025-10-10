@@ -1,4 +1,6 @@
-export async function authFetch(url, options = {}, navigate) {
+const BASE_URL = "http://192.168.43.10:8000"; // URL par défaut
+
+export async function authFetch(endpoint, options = {}, navigate) {
   const token = localStorage.getItem("access_token");
 
   if (!token) {
@@ -12,10 +14,11 @@ export async function authFetch(url, options = {}, navigate) {
       ...(options.headers || {}),
     };
 
-    // si ce n'est pas FormData, on met Content-Type
     if (!(options.body instanceof FormData)) {
       headers["Content-Type"] = "application/json";
     }
+
+    const url = endpoint.startsWith("http") ? endpoint : `${BASE_URL}${endpoint}`;
 
     const response = await fetch(url, {
       ...options,
@@ -35,9 +38,7 @@ export async function authFetch(url, options = {}, navigate) {
   }
 }
 
-
-// utils/authFetch.js
-export async function authFetchPdf(url, options = {}, navigate, responseType = "json") {
+export async function authFetchPdf(endpoint, options = {}, navigate, responseType = "json") {
   const token = localStorage.getItem("access_token");
 
   if (!token) {
@@ -55,6 +56,8 @@ export async function authFetchPdf(url, options = {}, navigate, responseType = "
       headers["Content-Type"] = "application/json";
     }
 
+    const url = endpoint.startsWith("http") ? endpoint : `${BASE_URL}${endpoint}`;
+
     const response = await fetch(url, {
       ...options,
       headers,
@@ -66,7 +69,6 @@ export async function authFetchPdf(url, options = {}, navigate, responseType = "
       return null;
     }
 
-    // ✅ Gérer plusieurs types de réponse
     if (responseType === "blob") {
       return await response.blob();
     } else if (responseType === "text") {
@@ -75,7 +77,7 @@ export async function authFetchPdf(url, options = {}, navigate, responseType = "
       return await response.json();
     }
   } catch (err) {
-    console.error("Erreur authFetch :", err);
+    console.error("Erreur authFetchPdf :", err);
     return null;
   }
 }

@@ -8,6 +8,9 @@
     cursor: pointer;
 }
 
+.closeBtn:hover{
+  background-color:rgb(163, 79, 79) !important;
+}
 .card2{
     width: 100%;
     max-width: 180px;
@@ -18,4 +21,53 @@
     height: 100%;             /* occupe toute la hauteur */
     object-fit: cover;        /* recadre sans déformer */
     transition: transform 0.3s ease;
+}
+ 
+.card1{
+
+width: 260px;
+height: auto;
+    display: flex ;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+}
+.card1 label{
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.card1 span{
+    font-weight: 200;
+}
+.grids{
+    gap: 5px;
+    padding-right: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 0fr) ;
+    width: 80%;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.closeBtn{
+    position: absolute;
+  bottom: auto;            /* enlève la position du haut */
+    top: -25px;   
+       /* place le bouton en bas */
+    left: auto;            /* centre horizontalement */
+    right: -1px;
+    z-index: 10;
+    background-color: #1B6979;
+}
+@media (max-width : 768px) {
+       .closeBtn{
+ top: auto;            /* enlève la position du haut */
+    bottom: -25px;         /* place le bouton en bas */
+    left: auto;            /* centre horizontalement */
+    right: 0%;
+    background-color: #1B6979;
+  }
 }

@@ -8,6 +8,7 @@ import AjoutNorme from './ajout/AjoutNorme';
 import Modifier from './modifier/Modifier';
 import AjoutSecteur from './ajout/AjoutSecteur';
 import ModiferSec from './modifier/ModiferSec';
+import Apropos from './Apropos';
 
 function Site({ user  ,onLogout}) {
   return (
@@ -23,6 +24,8 @@ function Site({ user  ,onLogout}) {
     <Route path="/modifier_secteur" element={<ModiferSec />} /> {/* nouvelle route */}
   
    <Route path="/ajout_secteur" element={<AjoutSecteur />} /> {/* nouvelle route */}
+     
+   <Route path="/a_propos" element={<Apropos />} /> {/* nouvelle route */}
    
         <Route path="/secteur" element={<Secteur />} />
            <Route path="*" element={<Navigate to="/list_norme" />} />

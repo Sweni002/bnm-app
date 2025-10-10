@@ -168,7 +168,7 @@ const handleSubmit = async (e) => {
 
   try {
  
-const data = await authFetch(" http://127.0.0.1:8000/secteurs/", {
+const data = await authFetch("/secteurs/", {
   method: "POST",
    body: JSON.stringify({ nom: nomSec.trim() }),
 

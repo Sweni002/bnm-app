@@ -114,10 +114,12 @@ useEffect(() => {
   const fetchSecteurs = async () => {
     try {
       setLoading(true);
-      const data = await fetchWithAuth("http://localhost:8000/secteurs");
+      const data = await authFetch("/secteurs", {}, navigate);
 
-      if (data && data.data) {
-        setSecteurs(data.data); // API renvoie { data: [...] }
+      if (data?.success && data.data) {
+        setSecteurs(data.data); // API renvoie { success: true, data: [...] }
+      } else {
+        setErrorMsg("Erreur lors de la récupération des secteurs.");
       }
     } catch (err) {
       console.error("Erreur API:", err);
@@ -128,7 +130,8 @@ useEffect(() => {
   };
 
   fetchSecteurs();
-}, []);
+}, [navigate]);
+
 
  const handleCloseSnack = (event, reason) => {
   if (reason === 'clickaway') {
@@ -221,7 +224,7 @@ formData.append("fichier_pdf",selectedFile);
 // stocke l'id, pas le nom
 console.log(formData)
 
-const data = await authFetch("http://localhost:8000/normes/", {
+const data = await authFetch("/normes/", {
   method: "POST",
   body: formData, // ✅ utiliser FormData
 }, navigate);

@@ -190,7 +190,7 @@ const goModif=()=>{
 }
 
 useEffect(() => {
-  authFetch(" http://127.0.0.1:8000/secteurs", {}, navigate)
+  authFetch("/secteurs", {}, navigate)
     .then(res => {
       if (res?.success) {
         setSecteurs(res.data);
@@ -216,7 +216,7 @@ useEffect(() => {
 }, [searchTermSecteur, secteurs, showAllSecteurs]);
 useEffect(() => {
   setLoading(true);
-  authFetch(" http://127.0.0.1:8000/secteurs", {}, navigate)
+  authFetch("/secteurs", {}, navigate)
     .then(res => {
       if (res?.success) {
         const mappedData = res.data.map((n) => ({
@@ -401,7 +401,7 @@ setNomM(normeId.nom)
 setCode(normeId.codification)
   try {
     const blob = await authFetchPdf(
-      `http://localhost:8000/secteurs/view_pdf/${normeId.key}`,
+      `/secteurs/view_pdf/${normeId.key}`,
       {},
       navigate,
       "blob"
@@ -444,7 +444,7 @@ const handleSecteurClick = (secteur) => {
   setSelectedSecteurId(secteur.id);
 
   const token = localStorage.getItem("access_token");
-  fetch(`http://localhost:8000/secteurs/secteur/${secteur.id}`, {
+  fetch(`/secteurs/secteur/${secteur.id}`, {
     headers: { Authorization: `Bearer ${token}` },
   })
     .then((res) => res.json())
@@ -496,7 +496,7 @@ const handleConfirmDelete = async () => {
 
   try {
     const res = await authFetch(
-      `http://localhost:8000/secteurs/${recordToDelete.key}`,
+      `/secteurs/${recordToDelete.key}`,
       { method: "DELETE" },
       navigate
     );

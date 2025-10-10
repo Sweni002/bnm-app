@@ -13,6 +13,19 @@ max-width: 100%;
   overflow: hidden;
 }
 
+.closeBtn{
+    position: absolute;
+  bottom: auto;            /* enlève la position du haut */
+    top: -25px;   
+       /* place le bouton en bas */
+    left: auto;            /* centre horizontalement */
+    right: -1px;
+    z-index: 10;
+    background-color: #1B6979;
+}
+.closeBtn:hover{
+  background-color:rgb(163, 79, 79) !important;
+}
 .cardContent {
   display: flex;
   align-items: center;
@@ -154,7 +167,7 @@ width: 90%;
   display: flex;
   padding: 10px;
   align-items: center;
-  width: 90%;
+  width: 100%;
 user-select: none;
 
 }
@@ -251,7 +264,7 @@ user-select: none;
 
 
 .listes {
-  
+
   user-select: none;
   width: 100%;
    margin: 0;
@@ -260,6 +273,7 @@ padding: 25px;
 display: flex;
 justify-content: flex-start;
 align-items: flex-start;
+flex-direction: column;
 
 }
 
@@ -269,12 +283,28 @@ align-items: flex-start;
   max-width: 97%;
 padding: 5px;
   display: flex;
+  
   align-items: center;
   flex-wrap: wrap;
   gap : 40px ;
   justify-content:space-around;
 }
 
+
+.details {
+width: 100%;
+ 
+  max-width: 97%;
+padding: 15px;
+
+  display: flex;
+  align-items: flex-start;
+ flex-direction: column;
+  gap : 40px ;
+  justify-content:center;
+ border-bottom: 1px solid rgb(204, 204, 204);
+ margin-bottom: 20px !important;
+}
 .cardliste {
   display: flex;
   background: #fff;
@@ -284,27 +314,6 @@ padding: 5px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.15);
   transition: transform 0.3s, box-shadow 0.3s;
   cursor: pointer;
-}
-
-.showMoreCard {
-  width: 325px; /* même largeur que CardNorme */
-  height: 200px; /* ajuster selon la hauteur de CardNorme */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 8px; /* même margin que tes CardNorme */
-  border: 2px dashed #1B6979;
-  border-radius: 12px;
-  color: #1B6979;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.showMoreCard:hover {
-  background-color: rgba(27, 105, 121, 0.1);
-  transform: scale(1.05);
 }
 
 .cardliste:hover {
@@ -334,22 +343,40 @@ padding: 5px;
   .total h4 {
     font-size: 0.9rem;
   }
+ 
   .cardImage {
     height:370px;
+  }
+  .fixer{
+    margin-top: 95px !important;
+  }
+  .scrollContainer{
+width: 480px !important;
+  }
+}
+@media (max-width: 787px) {
+
+  .card3{
+       max-width: 95% !important;  
   }
 }
 
 @media (max-width: 768px) {
   
+   .closeBtn{
+ top: auto;            /* enlève la position du haut */
+    bottom: -25px;         /* place le bouton en bas */
+    left: auto;            /* centre horizontalement */
+    right: 0%;
+    background-color: #1B6979;
+  }
   .listes2 {
     padding-left: 0px;
     padding-right: 0px;
      flex-direction: column;
     justify-content: center;
   }
-  .listes{
-    padding-top: 0px;
-  }
+
   .cardliste{
     width: 100%;
   }
@@ -371,6 +398,7 @@ padding: 5px;
 width: 420px ;
 ;
   }
+ 
   .scrollContainer i{
     font-size: 12px;
   }
@@ -393,7 +421,15 @@ width: 420px ;
         padding-left: 22px;
         padding-right: 10px;
     }
+    .propos{
 
+      gap: 15px !important;
+    }
+
+    .card2{
+      width: 140px !important;
+      
+    }
     .seacrhBar input {
         padding: 16px 13px;
         font-size: 0.95rem;
@@ -429,7 +465,10 @@ width: 420px ;
 @media (max-width: 423px) {
 
    .seacrhBar {
-    width: 345px !important;
+    width: 350px !important;
+   }
+   .scrollContainer{
+    width: 380px !important;
    }
 }
 @media (max-width: 370px) {
@@ -439,8 +478,20 @@ width: 420px ;
     width: 330px !important;
    }
 }
+@media (max-width :980px){
+  .fixer{
+    margin-top: 95px !important;
+  }
+  .details{
+    padding: 10px !important;
+ margin-bottom: 40px !important;
+  }
+    .propos{
+    flex: 1 !important;
+  }
 
-
+  
+} 
 
 @media (max-width: 383px) {
 
@@ -451,3 +502,99 @@ width: 420px ;
    }
 }
 
+
+.fixer{
+  margin-top: 130px;
+  width: 100%;
+  max-width: 70%;
+    display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: white;
+  justify-content: center;
+}
+
+.enhaut {
+
+  width: 100%;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+justify-content: center;
+}
+
+
+.propos{
+ 
+    display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 cartes par ligne */
+
+  align-items: flex-start;
+  flex: 0.8;
+  margin-left: 15px;
+ justify-items: center;  /* <-- au lieu de center */
+
+  gap : 20px;
+}
+
+.card2{
+  display: flex;
+  align-items: flex-start;
+
+  flex-direction: column;
+  gap : 10px;
+width: 200px;
+  word-break: break-word;  
+}
+
+.card2 span {
+  color: #686666;
+  word-wrap: break-word;      /* texte passe à la ligne si trop long */
+  overflow-wrap: break-word;  /* pour compatibilité moderne */
+  white-space: normal;        /* autorise le retour à la ligne */
+}
+.card2 label  {
+  font-weight: bold;
+  font-size: 0.9rem;}
+
+
+.images{
+  display: flex;
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  margin-bottom: 15px;
+}  
+
+.images img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card3 {
+  grid-column: 1 / -1; /* s’étend sur les 2 colonnes */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10px;
+   max-width: 75%;       /* empêche le débordement */
+
+
+}
+
+.card3 p{
+  text-align: start;
+  color: rgb(95, 94, 94);
+    line-height: 1.6;
+}
+
+.btn2{
+  margin-top: 15px;
+  width: 220px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}

@@ -180,7 +180,7 @@ const handleSubmit = async (e) => {
 
   try {
  
-const data = await authFetch(`http://127.0.0.1:8000/secteurs/${record.key}`, {
+const data = await authFetch(`/secteurs/${record.key}`, {
   method: "PUT",
    body: JSON.stringify({ nom: nomSec.trim() }),
 

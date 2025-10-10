@@ -1,16 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styles from './biblio.module.css';
+import styles from './apropos.module.css';
 import livre from '../assets/livre.jpeg'; // ton image
 import { Card, Row, Col, Statistic } from "antd";
 import { useMediaQuery } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { authFetch, authFetchPdf } from './utils/authFetch';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Snackbar from '@mui/material/Snackbar';
+import Button from '@mui/material/Button';
 import SnackbarContent from '@mui/material/SnackbarContent';
 import CardNorme
  from './CardNorme';
+ import { pdfjs } from 'react-pdf';
+ import { Worker, Viewer } from '@react-pdf-viewer/core';
+ //import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
+ import { zoomPlugin } from '@react-pdf-viewer/zoom';
+ import '@react-pdf-viewer/core/lib/styles/index.css';
+ import '@react-pdf-viewer/zoom/lib/styles/index.css';
+ import { Modal } from '@mui/material';
+ import {   SpecialZoomLevel } from '@react-pdf-viewer/core';
+ import {  OrbitProgress } from 'react-loading-indicators';
+ import Box from '@mui/material/Box';
+ import CloseIcon from '@mui/icons-material/Close';
+import Typography from '@mui/material/Typography';
+
+ pdfjs.GlobalWorkerOptions.workerSrc =
+   'https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js';
+ 
+ 
+
 function AnimatedCounter({ end, duration = 2000 }) {
   const [count, setCount] = useState(0);
 
@@ -33,7 +52,7 @@ function AnimatedCounter({ end, duration = 2000 }) {
   return <span className={styles.counter}>{count}</span>;
 }
 
-function Biblio() {
+function Apropos() {
   const navigate = useNavigate();
  const [normes, setNormes] = useState([]);
 
@@ -41,8 +60,6 @@ const [pdfUrl, setPdfUrl] = useState(null);
 const [loadingPdf, setLoadingPdf] = useState(false);
 const [nomM, setNomM] = useState("");
 const [code, setCode] = useState("");
-const [openPdfDialog, setOpenPdfDialog] = useState(false);
-const [visibleCount, setVisibleCount] = useState(4);
 
        const [showContainer, setShowContainer] = useState(false);
  const [totalNormes, setTotalNormes] = useState(0);
@@ -59,6 +76,62 @@ const [secteurs, setSecteurs] = useState([]);
 const isMobile = useMediaQuery('(max-width:768px)');
 const isMobileSearch = useMediaQuery('(max-width:725px)');
 const [totalPrix, setTotalPrix] = useState(0);
+const location = useLocation();
+const norme = location.state;
+const detailsRef = useRef(null);
+
+  const handleLikeClick = () => setLiked(!liked);
+ const [scrollPdf, setScrollPdf] = React.useState('paper');
+const [openPdfDialogs, setOpenPdfDialogs] = useState(false);
+const [pdfUrls, setPdfUrls] = React.useState("");
+  const [loadingPdfUrls, setLoadingPdfUrls] = React.useState(false);
+   const handleClickOpenPdf =  () => {
+    setOpenPdfDialogs(true);
+  
+  };
+
+  const handleClosePdf = () => {
+  if (pdfUrls) {
+    URL.revokeObjectURL(pdfUrls);
+  }
+  setPdfUrls("");
+  setOpenPdfDialogs(false);
+  setLoadingPdfUrls(false);
+
+};
+
+
+  const openPdfs = async (normeId) => {
+    console.log(normeId)
+    setLoadingPdfUrls(true); // Affiche le Backdrop
+      handleClickOpenPdf(); // Ouvre le dialog après 4 secondes
+ 
+    try {
+      const blob = await authFetchPdf(
+        `/normes/view_pdf/${normeId.idnorme}`,
+        {},
+        navigate,
+        "blob"
+      );
+  
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        setPdfUrls(url);
+      }
+    } catch (error) {
+      setSnackMessage("Erreur lors du chargement du PDF");
+      setSnackError(true);
+      setOpenSnack(true);
+    } finally {
+      setLoadingPdfUrls(false); // Masque le Backdrop
+    }
+  };
+const [selectedNorme, setSelectedNorme] = useState(location.state || null);
+
+// Réinitialiser la barre de recherche quand un nouveau norme est sélectionné
+useEffect(() => {
+  setSearchText(''); // efface le texte
+}, [selectedNorme, location.state]);
 
  useEffect(() => {
     const fetchNormes = async () => {
@@ -91,6 +164,7 @@ useEffect(() => {
     });
 }, []);
 
+
 const openPdf = async (norme) => {
   setLoadingPdf(true);
   handleClickOpenPdf();
@@ -116,6 +190,23 @@ const openPdf = async (norme) => {
     setLoadingPdf(false);
   }
 };
+const descriptionElementRef =useRef(null);
+  useEffect(() => {
+    if (openPdfDialogs) {
+      const { current: descriptionElement } = descriptionElementRef;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [openPdfDialogs]);
+
+
+useEffect(() => {
+  if (norme && detailsRef.current) {
+    detailsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}, [norme]);
+
       const updateScrollButtons = () => {
         if (scrollRef.current) {
           const { scrollWidth, clientWidth, scrollLeft } = scrollRef.current;
@@ -173,40 +264,17 @@ console.log("secteurs" , secteursData)
         const handleChange = (event) => {
           setSelected(event.target.value);
         };
+const filteredNormes = normes.filter(n =>
+  n.nom.toLowerCase().includes(searchText.toLowerCase())
+);
 
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
+      <div className={styles.card } ref={detailsRef}>
         <div className={styles.cardContent}>
-          <div className={styles.imageWrapper}>
-            <div className={styles.cardImage}>
-  <img src={livre} alt="Illustration" className={styles.image} />
-
-            </div>
-          
-            {/* Texte centré dans l’image */}
-            <div className={styles.overlay}>
-                <div className={styles.total}>
-         <AnimatedCounter end={totalNormes} />
-        
-                <h4>Normes malagasy</h4>
- 
-                </div>
-                <div className={styles.total}>
-  <AnimatedCounter end={totalSecteurs} />
- <h4>Secteurs</h4>
-                </div>
-                   <div className={styles.total}>
-  <AnimatedCounter end={350000} />
-   <h4>Ariary / pages</h4>
-                </div>   
-             
-             
-           
-            </div>
-          </div>
-          <div className={styles.content}>
+     <div className={styles.fixer}>
+              <div className={styles.content}>
      <div className={styles.seacrhBar}>
   <i className="fa-solid fa-magnifying-glass"></i>
 <input
@@ -235,7 +303,7 @@ console.log("secteurs" , secteursData)
          
 
           </div>
-<div className={styles.scrollContainer}>
+<div ref={detailsRef}  className={styles.scrollContainer}>
    {showLeft && (
     <div style={{display :"flex" ,alignContent :"center" ,
       paddingRight : 13
@@ -290,38 +358,118 @@ console.log("secteurs" , secteursData)
   
 
            </div>
+     </div>
+    
  <div className={styles.listes}>
+  {((searchText === '' && norme) || (searchText !== '' && filteredNormes.length < 0)) && (
 
-    <div className={styles.listes2}>
-  {normes
-    .filter((n) => n.nom.toLowerCase().includes(searchText.toLowerCase()))
-    .slice(0, visibleCount)
-    .map((norme) => (
-      <CardNorme
-        navigate={navigate}
-        key={norme.id}
-        idnorme={norme.id}
-        images={norme.fichier_pdf || '/default.png'}
-        nomnorme={norme.nom}
-        nomsecteur={norme.secteur?.nom || '—'}
-        dateEdition={norme.date_creation}
-        codification={norme.codification}
-        nbpages={norme.nbrepage}
-      />
-    ))}
+      <div    className={styles.details}>
+ 
+ <div className={styles.enhaut}>
+ 
+  {norme?.pdfThumbnail && (
+    <div className={styles.images}>
+  <img
+      src={norme.pdfThumbnail}
+      alt={norme.nomnorme}
+     
+    />
+    </div>
+  
+  )}
+  <div className={styles.propos}>
+    <div className={styles.card2}>
+ <label htmlFor="">Nom du norme</label>
+    <span>{norme.nomnorme}</span>
+    </div>
+     <div className={styles.card2}>
+ <label htmlFor="">Secteur</label>
+    <span>{norme.nomsecteur}</span>
+    </div>
+      <div className={styles.card2}>
+ <label htmlFor="">Date d'edition</label>
+    <span>{norme.dateEdition}</span>
+    </div>
+      <div className={styles.card2}>
+ <label htmlFor="">Codification</label>
+    <span>{norme.codification}</span>
+    </div>
+      <div className={styles.card2}>
+ <label htmlFor="">Type</label>
+    <span>PDF</span>
+    </div>
+      <div className={styles.card2}>
+ <label htmlFor="">Nombre de page</label>
+    <span>{norme.nbpages}</span>
+    </div>
+    <div className={styles.card3}>
+  <p>
+    Vous ne pouvez pas capturer ni enregistrer ce fichier PDF sauf si vous le 
+    vendez sur le site officiel du <strong>Bureau des Normes de Madagascar</strong>. 
+    C’est illégal autrement. <br />
+    <a
+      href="https://www.bnm.mg" 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      style={{
+        color: "#1B6979",
+        textDecoration: "underline",
+        fontWeight: "bold",
+        cursor: "pointer" ,
+        marginRight : 8
+      }}
+    >
+      Cliquez ici 
+    </a>
+    pour accéder au site officiel
+  </p>
+  <div className={styles.btn2}>
 
-  {/* Bouton "Afficher plus" */}
-  {visibleCount < normes.filter((n) =>
-      n.nom.toLowerCase().includes(searchText.toLowerCase())
-    ).length && (
-      <div className={styles.showMoreCard} onClick={() => navigate("/a_propos")}>
-        <i className="fa-solid fa-right-long" style={{ fontSize: '2rem' }}></i>
-        <span>Voir plus</span>
-      </div>
-    )}
+     <Button
+     fullWidth
+        variant="contained"
+      color="primary"
+      startIcon={<i class="fa-solid fa-arrow-right-from-bracket"></i>}
+          sx={{
+            p:1,
+        textTransform: 'none',
+        borderRadius: '4px',
+        fontWeight: 500,
+        fontSize : '1.0rem' ,
+        backgroundColor: '#1976d2',
+      }}
+  onClick={() => openPdfs(norme)}
+    >
+      Voir le fichier
+    </Button>
+  </div>
 </div>
 
+  </div>
+  
+ </div>
+  
+ 
+</div>
+    )}
+        <div className={styles.listes2}>
+ {normes
+  .filter((n) => n.nom.toLowerCase().includes(searchText.toLowerCase()))
+  .map((norme) => (
+    <CardNorme
+    navigate={navigate}
+      idnorme={norme.id}
+      images={norme.fichier_pdf || '/default.png'} // ton image ou icône PDF
+      nomnorme={norme.nom}
+      nomsecteur={norme.secteur?.nom || '—'}
+      dateEdition={norme.date_creation}
+      codification={norme.codification}
+      nbpages={norme.nbrepage}
+     
+    />
+  ))}
 
+</div>
  </div>
    
 
@@ -343,8 +491,60 @@ console.log("secteurs" , secteursData)
           message={<span>{snackMessage}</span>}
         />
       </Snackbar>
+      <Modal
+  open={openPdfDialogs}
+  onClose={handleClosePdf} // se déclenche sur clic à l’extérieur ou ESC
+  closeAfterTransition
+
+>
+  
+  <Box
+   
+    sx={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '90%',
+      maxWidth: 610,
+      height: '90vh',
+        backgroundColor: 'transparent', // <-- fond blanc pour PDF
+    borderRadius: 2,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+  >
+        <div  className={styles.closeBtn}>
+
+
+     <IconButton onClick={handleClosePdf}>
+        <CloseIcon style={{color :"white"}}/>
+      </IconButton>
+          </div>
+    {loadingPdfUrls ? (
+<OrbitProgress color={["#7ca4c8", "#a0bdd7", "#c4d6e6", "#e8eff5"]} />
+
+  ) : pdfUrls ? (
+      <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
+        <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
+          <Viewer
+            fileUrl={pdfUrls}
+            theme="light"
+            defaultScale={SpecialZoomLevel.PageFit}
+            style={{ width: '100%', height: '100%' }}
+          />
+        </Worker>
+      </div>
+    ) : (
+      <Typography color="error" sx={{ textAlign: 'center' }}>
+        Erreur de chargement du PDF
+      </Typography>
+    )}
+  </Box>
+</Modal>
     </div>
   );
 }
 
-export default Biblio;
+export default Apropos;

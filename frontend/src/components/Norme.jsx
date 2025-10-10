@@ -189,7 +189,7 @@ const goModif=()=>{
 }
 
 useEffect(() => {
-  authFetch("http://localhost:8000/secteurs", {}, navigate)
+  authFetch("/secteurs", {}, navigate)
     .then(res => {
       if (res?.success) {
         setSecteurs(res.data);
@@ -215,7 +215,7 @@ useEffect(() => {
 }, [searchTermSecteur, secteurs, showAllSecteurs]);
 useEffect(() => {
   setLoading(true);
-  authFetch("http://localhost:8000/normes", {}, navigate)
+  authFetch("/normes", {}, navigate)
     .then(res => {
       if (res?.success) {
         const mappedData = res.data.map((n) => ({
@@ -424,7 +424,7 @@ setNomM(normeId.nom)
 setCode(normeId.codification)
   try {
     const blob = await authFetchPdf(
-      `http://localhost:8000/normes/view_pdf/${normeId.key}`,
+      `/normes/view_pdf/${normeId.key}`,
       {},
       navigate,
       "blob"
@@ -461,44 +461,45 @@ const columnsMobile = [
  />,
   },
 ];
-
-const handleSecteurClick = (secteur) => {
+const handleSecteurClick = async (secteur) => {
   setSelected(secteur.nom); // pour surligner
   setSelectedSecteurId(secteur.id);
 
-  const token = localStorage.getItem("access_token");
-  fetch(`http://localhost:8000/normes/secteur/${secteur.id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then((res) => res.json())
-    .then((res) => {
-      if (res.success) {
-        const mappedData = res.data.map((n) => ({
-         key: n.id,
-          nom: n.nom,
-          dateEdition: n.date_creation?.split("T")[0] || "",
-          codification: n.codification,
-          fichier_pdf: n.fichier_pdf ,
-          nomsecteur: n.secteur?.nom || "",
-          idsecteur:n.secteur?.id || "",
-          nbrepage : n.nbrepage
-        }));
-        setNormes(mappedData);
-        setFilteredNormes(mappedData);
-      }
-    })
-    .catch(console.error);
+  try {
+    const res = await authFetch(`/normes/secteur/${secteur.id}`, {}, navigate);
 
-     const btn = scrollBtnsRef.current[secteur.id];
-if (btn && scrollRef.current) {
-  btn.scrollIntoView({
-    behavior: 'smooth',
-    block: 'nearest',
-    inline: 'center'
-  });
-}
+    if (res?.success) {
+      const mappedData = res.data.map((n) => ({
+        key: n.id,
+        nom: n.nom,
+        dateEdition: n.date_creation?.split("T")[0] || "",
+        codification: n.codification,
+        fichier_pdf: n.fichier_pdf,
+        nomsecteur: n.secteur?.nom || "",
+        idsecteur: n.secteur?.id || "",
+        nbrepage: n.nbrepage
+      }));
 
+      setNormes(mappedData);
+      setFilteredNormes(mappedData);
+    } else {
+      console.error("Erreur lors de la récupération des normes par secteur");
+    }
+  } catch (err) {
+    console.error("Erreur handleSecteurClick:", err);
+  }
+
+  // Scroll vers le bouton du secteur sélectionné
+  const btn = scrollBtnsRef.current[secteur.id];
+  if (btn && scrollRef.current) {
+    btn.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'center'
+    });
+  }
 };
+
 const [confirmOpen, setConfirmOpen] = useState(false);
 const [recordToDelete, setRecordToDelete] = useState(null);
 const [confirmOpenMobile, setConfirmOpenMobile] = useState(false);
@@ -519,7 +520,7 @@ const handleConfirmDelete = async () => {
 
   try {
     const res = await authFetch(
-      `http://localhost:8000/normes/${recordToDelete.key}`,
+      `/normes/${recordToDelete.key}`,
       { method: "DELETE" },
       navigate
     );
@@ -632,35 +633,36 @@ const openFullscreen = () => {
     value="Toutes"
     control={<Radio />}
     label="Toutes"
-    onClick={() => {
-      setSelected("Toutes");
-      setSelectedSecteurId(null);
+  onClick={async () => {
+  setSelected("Toutes");
+  setSelectedSecteurId(null);
 
-      const token = localStorage.getItem("access_token");
-      fetch("http://localhost:8000/normes", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          if (res.success) {
-            const mappedData = res.data.map((n) => ({
-             key: n.id,
-          nom: n.nom,
-          dateEdition: n.date_creation?.split("T")[0] || "",
-          codification: n.codification,
-          fichier_pdf: n.fichier_pdf ,
-          nomsecteur: n.secteur?.nom || "",
-          idsecteur:n.secteur?.id || "",
-          nbrepage : n.nbrepage
-            }));
-            console.log("triage : " , mappedData)
-            setNormes(mappedData);
-            setFilteredNormes(mappedData);
-          }
-        })
+  try {
+    const res = await authFetch("/normes", {}, navigate);
 
-        .catch(console.error);
-    }}
+    if (res?.success) {
+      const mappedData = res.data.map((n) => ({
+        key: n.id,
+        nom: n.nom,
+        dateEdition: n.date_creation?.split("T")[0] || "",
+        codification: n.codification,
+        fichier_pdf: n.fichier_pdf,
+        nomsecteur: n.secteur?.nom || "",
+        idsecteur: n.secteur?.id || "",
+        nbrepage: n.nbrepage
+      }));
+
+      console.log("triage :", mappedData);
+      setNormes(mappedData);
+      setFilteredNormes(mappedData);
+    } else {
+      console.error("Erreur lors de la récupération de toutes les normes");
+    }
+  } catch (err) {
+    console.error("Erreur récupération toutes normes :", err);
+  }
+}}
+
     sx={{
       userSelect: "none",
       borderRadius: 1.5,
@@ -769,7 +771,7 @@ const openFullscreen = () => {
       setSelectedSecteurId(null);
 
       const token = localStorage.getItem("access_token");
-      fetch("http://localhost:8000/normes", {
+      fetch("/normes", {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
