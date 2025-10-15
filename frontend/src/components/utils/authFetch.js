@@ -1,4 +1,4 @@
-const BASE_URL = "http://192.168.43.10:8000"; // URL par défaut
+const BASE_URL = "http://192.168.10.31:8000"; // URL par défaut
 
 export async function authFetch(endpoint, options = {}, navigate) {
   const token = localStorage.getItem("access_token");

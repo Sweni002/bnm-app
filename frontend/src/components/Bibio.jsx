@@ -53,12 +53,16 @@ const [openSnack, setOpenSnack] = useState(false);
          const scrollRef = useRef(null);
        const [showLeft, setShowLeft] = useState(false);
        const [showRight, setShowRight] = useState(false);
-      const [selected, setSelected] = useState("Photos");
 const [searchText, setSearchText] = useState('');
 const [secteurs, setSecteurs] = useState([]);
 const isMobile = useMediaQuery('(max-width:768px)');
 const isMobileSearch = useMediaQuery('(max-width:725px)');
 const [totalPrix, setTotalPrix] = useState(0);
+  const [selectedSecteurId, setSelectedSecteurId] = useState(null); // <--- nouvel état
+  const [selected, setSelected] = useState(""); // nom du secteur sélectionné
+const [showDetails, setShowDetails] = useState(false);
+
+
 
  useEffect(() => {
     const fetchNormes = async () => {
@@ -116,15 +120,37 @@ const openPdf = async (norme) => {
     setLoadingPdf(false);
   }
 };
-      const updateScrollButtons = () => {
-        if (scrollRef.current) {
-          const { scrollWidth, clientWidth, scrollLeft } = scrollRef.current;
-          setShowLeft(scrollLeft > 0);
-          setShowRight(scrollLeft + clientWidth < scrollWidth);
-      
-          console.log("Scroll mis à jour", { scrollLeft, scrollWidth, clientWidth });
-        }
-      };
+   const updateScrollButtons = () => {
+  if (scrollRef.current) {
+    const { scrollWidth, clientWidth, scrollLeft } = scrollRef.current;
+
+    // Si on est complètement à gauche → cache la flèche gauche
+    const atStart = scrollLeft <= 10;
+
+    // Si on est complètement à droite → cache la flèche droite
+    const atEnd = scrollLeft + clientWidth >= scrollWidth - 10;
+
+    setShowLeft(!atStart);
+    setShowRight(!atEnd);
+  }
+};
+
+
+useEffect(() => {
+  const refCurrent = scrollRef.current;
+  if (!refCurrent) return;
+
+  updateScrollButtons(); // met à jour dès le montage
+
+  refCurrent.addEventListener("scroll", updateScrollButtons);
+  window.addEventListener("resize", updateScrollButtons);
+
+  return () => {
+    refCurrent.removeEventListener("scroll", updateScrollButtons);
+    window.removeEventListener("resize", updateScrollButtons);
+  };
+}, [secteurs]);
+
       
       useEffect(() => {
         console.log("scrollRef.current", scrollRef.current);
@@ -161,20 +187,55 @@ console.log("secteurs" , secteursData)
     fetchTotals();
   }, [navigate]);
       
-        
-        const scroll = (direction) => {
-          if (scrollRef.current) {
-            scrollRef.current.scrollBy({
-              left: direction === "left" ? -200 : 200, // déplacement
-              behavior: "smooth", // animation fluide
-            });
-          }
-        };
+    
+const scroll = (direction) => {
+  if (scrollRef.current) {
+    scrollRef.current.scrollBy({
+      left: direction === "left" ? -250 : 250,
+      behavior: "smooth",
+    });
+
+    // met à jour les flèches après un léger délai
+    setTimeout(updateScrollButtons, 400);
+  }
+};
+
         const handleChange = (event) => {
           setSelected(event.target.value);
         };
 
+ const handleSecteurClick = async (secteur) => {
+    // Si on reclique sur le même secteur → on recharge toutes les normes
+    if (selectedSecteurId === secteur.id) {
+      setSelectedSecteurId(null);
+      setSelected("");
+      try {
+        const res = await authFetch("/normes", {}, navigate);
+        if (res?.success) setNormes(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+      return;
+    }
 
+    // Sinon → on charge les normes de ce secteur
+    setSelectedSecteurId(secteur.id);
+    setSelected(secteur.nom);
+
+    try {
+      const res = await authFetch(`/normes/secteur/${secteur.id}`, {}, navigate);
+      if (res?.success) {
+        setNormes(res.data);
+      } else {
+        setSnackMessage("Aucune norme trouvée pour ce secteur");
+        setOpenSnack(true);
+      }
+    } catch (error) {
+      console.error("Erreur lors du filtrage :", error);
+      setSnackMessage("Erreur de filtrage");
+      setOpenSnack(true);
+    }
+  };
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -262,7 +323,8 @@ console.log("secteurs" , secteursData)
   <button
     key={item.id}
     className={`${styles.scrollBtn} ${selected === item.nom ? styles.activeBtn : ""}`}
-    onClick={() => setSelected(item.nom)}
+     onClick={() => handleSecteurClick(item)}
+  
   >
     {item.nom}
   </button>
@@ -307,6 +369,8 @@ console.log("secteurs" , secteursData)
         dateEdition={norme.date_creation}
         codification={norme.codification}
         nbpages={norme.nbrepage}
+         setShow={setShowDetails}
+  openShow={showDetails}
       />
     ))}
 

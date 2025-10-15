@@ -54,7 +54,9 @@ export default function CardNorme({
   nbpages,
   navigate,
   codification ,
-  dateEdition 
+  dateEdition  ,
+  setShow ,
+  openShow
 }) {
   const [hovered, setHovered] = React.useState(false);
   const [liked, setLiked] = React.useState(false);
@@ -149,6 +151,7 @@ const [pdfUrls, setPdfUrls] = React.useState("");
     loadPdfThumbnail();
   }, [idnorme, navigate]);
 const goApropos = () => {
+  setShow(!openShow)
   navigate("/a_propos", {
     state: {
       idnorme,
@@ -160,6 +163,7 @@ const goApropos = () => {
       pdfThumbnail
     }
   });
+  
 };
 
 

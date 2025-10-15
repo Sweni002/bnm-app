@@ -151,15 +151,21 @@ useEffect(() => {
     }
   }, [openPdfDialog]);
 
-const updateScrollButtons = () => {
+ const updateScrollButtons = () => {
   if (scrollRef.current) {
     const { scrollWidth, clientWidth, scrollLeft } = scrollRef.current;
-    setShowLeft(scrollLeft > 0);
-    setShowRight(scrollLeft + clientWidth < scrollWidth);
 
-    console.log("Scroll mis à jour", { scrollLeft, scrollWidth, clientWidth });
+    // Si on est complètement à gauche → cache la flèche gauche
+    const atStart = scrollLeft <= 10;
+
+    // Si on est complètement à droite → cache la flèche droite
+    const atEnd = scrollLeft + clientWidth >= scrollWidth - 10;
+
+    setShowLeft(!atStart);
+    setShowRight(!atEnd);
   }
 };
+
 
 useEffect(() => {
   console.log("scrollRef.current", scrollRef.current);
@@ -175,6 +181,20 @@ useEffect(() => {
     }
   };
 }, []);
+useEffect(() => {
+  const refCurrent = scrollRef.current;
+  if (!refCurrent) return;
+
+  updateScrollButtons(); // met à jour dès le montage
+
+  refCurrent.addEventListener("scroll", updateScrollButtons);
+  window.addEventListener("resize", updateScrollButtons);
+
+  return () => {
+    refCurrent.removeEventListener("scroll", updateScrollButtons);
+    window.removeEventListener("resize", updateScrollButtons);
+  };
+}, [secteurs]);
 
 
 const goAjout=()=>{
@@ -271,14 +291,17 @@ useEffect(() => {
     sessionStorage.removeItem('snackError');
   }
 }, []);
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -200 : 200, // déplacement
-        behavior: "smooth", // animation fluide
-      });
-    }
-  };
+ const scroll = (direction) => {
+  if (scrollRef.current) {
+    scrollRef.current.scrollBy({
+      left: direction === "left" ? -250 : 250,
+      behavior: "smooth",
+    });
+
+    // met à jour les flèches après un léger délai
+    setTimeout(updateScrollButtons, 400);
+  }
+};
   const handleChange = (event) => {
     setSelected(event.target.value);
   };

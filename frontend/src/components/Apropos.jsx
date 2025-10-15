@@ -70,7 +70,7 @@ const [openSnack, setOpenSnack] = useState(false);
          const scrollRef = useRef(null);
        const [showLeft, setShowLeft] = useState(false);
        const [showRight, setShowRight] = useState(false);
-      const [selected, setSelected] = useState("Photos");
+     
 const [searchText, setSearchText] = useState('');
 const [secteurs, setSecteurs] = useState([]);
 const isMobile = useMediaQuery('(max-width:768px)');
@@ -79,6 +79,9 @@ const [totalPrix, setTotalPrix] = useState(0);
 const location = useLocation();
 const norme = location.state;
 const detailsRef = useRef(null);
+ const [selectedSecteurId, setSelectedSecteurId] = useState(null); // <--- nouvel état
+  const [selected, setSelected] = useState(""); // nom du secteur sélectionné
+const [showDetails, setShowDetails] = useState(false);
 
   const handleLikeClick = () => setLiked(!liked);
  const [scrollPdf, setScrollPdf] = React.useState('paper');
@@ -130,8 +133,9 @@ const [selectedNorme, setSelectedNorme] = useState(location.state || null);
 
 // Réinitialiser la barre de recherche quand un nouveau norme est sélectionné
 useEffect(() => {
-  setSearchText(''); // efface le texte
-}, [selectedNorme, location.state]);
+  setSearchText('');
+
+}, [selectedNorme, location.state ]);
 
  useEffect(() => {
     const fetchNormes = async () => {
@@ -163,6 +167,20 @@ useEffect(() => {
       }
     });
 }, []);
+useEffect(() => {
+  const refCurrent = scrollRef.current;
+  if (!refCurrent) return;
+
+  updateScrollButtons(); // met à jour dès le montage
+
+  refCurrent.addEventListener("scroll", updateScrollButtons);
+  window.addEventListener("resize", updateScrollButtons);
+
+  return () => {
+    refCurrent.removeEventListener("scroll", updateScrollButtons);
+    window.removeEventListener("resize", updateScrollButtons);
+  };
+}, [secteurs]);
 
 
 const openPdf = async (norme) => {
@@ -207,15 +225,20 @@ useEffect(() => {
   }
 }, [norme]);
 
-      const updateScrollButtons = () => {
-        if (scrollRef.current) {
-          const { scrollWidth, clientWidth, scrollLeft } = scrollRef.current;
-          setShowLeft(scrollLeft > 0);
-          setShowRight(scrollLeft + clientWidth < scrollWidth);
-      
-          console.log("Scroll mis à jour", { scrollLeft, scrollWidth, clientWidth });
-        }
-      };
+     const updateScrollButtons = () => {
+  if (scrollRef.current) {
+    const { scrollWidth, clientWidth, scrollLeft } = scrollRef.current;
+
+    // Si on est complètement à gauche → cache la flèche gauche
+    const atStart = scrollLeft <= 10;
+
+    // Si on est complètement à droite → cache la flèche droite
+    const atEnd = scrollLeft + clientWidth >= scrollWidth - 10;
+
+    setShowLeft(!atStart);
+    setShowRight(!atEnd);
+  }
+};
       
       useEffect(() => {
         console.log("scrollRef.current", scrollRef.current);
@@ -252,15 +275,55 @@ console.log("secteurs" , secteursData)
     fetchTotals();
   }, [navigate]);
       
-        
-        const scroll = (direction) => {
-          if (scrollRef.current) {
-            scrollRef.current.scrollBy({
-              left: direction === "left" ? -200 : 200, // déplacement
-              behavior: "smooth", // animation fluide
-            });
-          }
-        };
+         
+const scroll = (direction) => {
+  if (scrollRef.current) {
+    scrollRef.current.scrollBy({
+      left: direction === "left" ? -250 : 250,
+      behavior: "smooth",
+    });
+
+    // met à jour les flèches après un léger délai
+    setTimeout(updateScrollButtons, 400);
+  }
+};
+const handleSecteurClick = async (secteur) => {
+ 
+    // Si on reclique sur le même secteur → on recharge toutes les normes
+    if (selectedSecteurId === secteur.id) {
+      setSelectedSecteurId(null);
+      setSelected("");
+        setShowDetails(true); // réaffiche détails si on vient de goApropos
+
+      try {
+        const res = await authFetch("/normes", {}, navigate);
+        if (res?.success) setNormes(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+      return;
+    }
+  setShowDetails(false);
+
+    // Sinon → on charge les normes de ce secteur
+    setSelectedSecteurId(secteur.id);
+    setSelected(secteur.nom);
+
+    try {
+      const res = await authFetch(`/normes/secteur/${secteur.id}`, {}, navigate);
+      if (res?.success) {
+        setNormes(res.data);
+      } else {
+        setSnackMessage("Aucune norme trouvée pour ce secteur");
+        setOpenSnack(true);
+      }
+    } catch (error) {
+      console.error("Erreur lors du filtrage :", error);
+      setSnackMessage("Erreur de filtrage");
+      setOpenSnack(true);
+    }
+  };
+
         const handleChange = (event) => {
           setSelected(event.target.value);
         };
@@ -268,6 +331,11 @@ const filteredNormes = normes.filter(n =>
   n.nom.toLowerCase().includes(searchText.toLowerCase())
 );
 
+useEffect(() => {
+  if (selectedSecteurId === null && norme) {
+    setShowDetails(true);
+  }
+}, [selectedSecteurId, norme]);
 
   return (
     <div className={styles.container}>
@@ -330,7 +398,7 @@ const filteredNormes = normes.filter(n =>
   <button
     key={item.id}
     className={`${styles.scrollBtn} ${selected === item.nom ? styles.activeBtn : ""}`}
-    onClick={() => setSelected(item.nom)}
+    onClick={() => handleSecteurClick(item)}
   >
     {item.nom}
   </button>
@@ -361,7 +429,7 @@ const filteredNormes = normes.filter(n =>
      </div>
     
  <div className={styles.listes}>
-  {((searchText === '' && norme) || (searchText !== '' && filteredNormes.length < 0)) && (
+  {showDetails && norme  &&((searchText === '' && norme) || (searchText !== '' && filteredNormes.length < 0)) && (
 
       <div    className={styles.details}>
  
@@ -465,7 +533,8 @@ const filteredNormes = normes.filter(n =>
       dateEdition={norme.date_creation}
       codification={norme.codification}
       nbpages={norme.nbrepage}
-     
+     setShow={setShowDetails}
+     openShow={showDetails}
     />
   ))}
 

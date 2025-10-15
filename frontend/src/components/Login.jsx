@@ -71,7 +71,7 @@ const handleLogin = async (username, password) => {
   setErrorMsg(false);
 
   try {
-    const response = await fetch(" http://192.168.43.10:8000/auth/login", {
+    const response = await fetch(" http://192.168.10.31:8000/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -105,6 +105,7 @@ onLogin?.({ role: data.data.role, name: username });
     setLoading(false);
   }
 };
+
 
 
 
@@ -168,7 +169,7 @@ onLogin?.({ role: data.data.role, name: username });
     ),
   }}   inputProps={{
     style: {
-      padding: '3px', 
+      padding: '5px', 
       fontSize : 20 // padding intérieur autour du texte
     },
   }}
@@ -224,7 +225,7 @@ onLogin?.({ role: data.data.role, name: username });
         }}
       inputProps={{
     style: {
-      padding: '4px', 
+      padding: '6px', 
       fontSize : 20 // padding intérieur autour du texte
     },
   }}

@@ -309,7 +309,7 @@ const handleSecteur = (secteur, e) => {
        sx={{
     mb: 2,
     "& .MuiInputBase-input": {
-      padding: "5px 1px",   // ✅ padding interne uniforme
+      padding: "11px 1px",   // ✅ padding interne uniforme
       fontSize: "1rem",
       fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
         "@media (max-width:600px)": {
@@ -354,7 +354,7 @@ value={codification}
   sx={{
     mb: 2,
     "& .MuiInputBase-input": {
-      padding: "5px 1px",   // ✅ padding interne uniforme
+      padding: "11px 1px",   // ✅ padding interne uniforme
       fontSize: "1rem",
       fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
          "@media (max-width:600px)": {
@@ -399,7 +399,7 @@ value={codification}
          sx={{
     mb: 2,
     "& .MuiInputBase-input": {
-      padding: "5px 1px",   // ✅ padding interne uniforme
+      padding: "11px 1px",   // ✅ padding interne uniforme
       fontSize: "1rem",
       fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
          "@media (max-width:600px)": {
@@ -501,7 +501,7 @@ value={codification}
          sx={{
     mb: 2,
     "& .MuiInputBase-input": {
-      padding: "5px 1px",   // ✅ padding interne uniforme
+      padding: "11px 1px",   // ✅ padding interne uniforme
       fontSize: "1rem",
       fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
          "@media (max-width:600px)": {
@@ -592,7 +592,7 @@ value={codification}
   sx={{
     mb: 2,
     "& .MuiInputBase-input": {
-      padding: "5px 1px",
+      padding: "11px 1px",
       fontSize: "1rem",
       fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
       "@media (max-width:600px)": {
@@ -646,7 +646,7 @@ value={codification}
          sx={{
     mb: 2,
     "& .MuiInputBase-input": {
-      padding: "5px 1px",   // ✅ padding interne uniforme
+      padding: "11px 1px",   // ✅ padding interne uniforme
       fontSize: "1rem",
       fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
          "@media (max-width:600px)": {
