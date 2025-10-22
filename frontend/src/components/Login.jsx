@@ -84,11 +84,12 @@ console.log(data)
 onLogin?.({ role: data.data.role, name: username });
 
 
-  navigate("/list_norme");
+  
 
 
     setLoading(false);
 
+    navigate("/list_norme");
   } catch (err) {
     console.error(err);
     setErrorMsg("Erreur serveur, veuillez réessayer.");
