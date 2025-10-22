@@ -271,8 +271,11 @@ const goApropos = () => {
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      width: '90%',
-      maxWidth: 610,
+      width: '100%',
+      maxWidth :610,
+       '@media (max-width:800px)': {
+      maxWidth: "510px !important",
+    },
       height: '90vh',
         backgroundColor: 'transparent', // <-- fond blanc pour PDF
     borderRadius: 2,
