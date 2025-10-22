@@ -21,8 +21,8 @@ background-color: #f1f1f1;
 }
 
 .container img {
-  width: 140px;   /* augmenter la largeur de l'image */
-  height: 120px;  /* augmenter la hauteur */
+  width: 110px;   /* augmenter la largeur de l'image */
+  height: 110px;  /* augmenter la hauteur */
   padding-bottom: 0px; /* espace entre l'image et le formulaire */
 }
 
@@ -38,75 +38,21 @@ background-color: #f1f1f1;
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 15px;
+  
   padding: 30px;
   background-color: white; /* fond blanc semi-transparent */
  border-radius: 8px;
   box-shadow: 0px 10px 10px  rgba(0, 0, 0, 0.1);
  
- 
+  gap: 20px;
   width: 100%;
-max-width: 800px;
+max-width: 450px;
   /* px fade-in du formulaire */
   animation: fadeInForm 1s ease forwards;
   opacity: 0;
   transform: translateY(-20px);
 }
 
-.gauche{
-  display: flex;
-flex-direction: column;
-  justify-content: center;
-   gap: 20px;
-   padding: 0;
-   width:90%;
-}
-.droite{
-  
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100%;
-
-}
-.espace{
-  display: flex;
-  flex-direction: column;
-  align-items: center ;
-  gap: 7px;
-}
-.espace label{
-    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
-  font-size: 1.6rem;
-  color: rgb(10, 97, 155);
-  font-weight:bold ;
-}
-
-.error{
- padding: 10px;
-  display: flex;
-  align-items: flex-start;
-}
-.entete  {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-}
-.entete h2{
-    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
-  font-size: 1.7rem;
-  font-weight: 570;
-  color: rgb(10, 97, 155);
-}
-.entete h3{
-    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
-  font-size: 1.0rem;
-  color: gray;
-  font-weight: normal;
-}
 @keyframes fadeInForm {
   to {
     opacity: 1;
@@ -156,6 +102,16 @@ flex-direction: column;
 }
 
 
+h2{
+    text-align: center;
+    font-size: 28px;
+    font-weight: 400px;
+    letter-spacing: 1px;
+        color: rgb(51, 94, 143) !important;
+   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+}
+
 .signup {
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 
@@ -189,11 +145,6 @@ flex-direction: column;
   background-color: #ccc;
   width: 100%;
 }
-.espace span{
-  color: rgb(75, 74, 74);
-  font-size: 1.0rem;
-  letter-spacing: 1 !important;
-}
 
 
 @media (max-width : 430px) {
@@ -201,23 +152,28 @@ flex-direction: column;
 
     .form {
   border-radius: 12px;
-  max-width: 100% !important;
+  width:330px;
   gap: 10px;
 padding: 25px;
   /* Scroll si écran petit */
-  max-height: 80vh;
+  max-height: 100vh;
   overflow-y: auto;
 }
 
-
 .container img{
-  width: 115px !important;
-  height: 110px !important;
+  width: 5px !important;
+  height: 0px !important;
 }
 .form h2{
-  font-size:  19px;
+  font-size:  1.3rem;
+}
+.signup span{
+  font-size:  0.8rem;
 }
 
+.signup a{
+    font-size:  0.8rem;
+}
 
 
 
@@ -236,56 +192,10 @@ padding: 25px;
 }
 
 
-
-
-@media (max-width : 660px) {
-
-  .form{
-    max-width: 80% ;
-  }
-  .droite{
-    display: none;
-  }
-  .gauche{
+.flexible {
+    display: flex;
     width: 100%;
-  }
-  .entete{
-   align-items: flex-start;
-  }
-.error{
-  padding: 0;}
-  .entete h2{
-    font-size: 1.5rem;
-  }
-  .oublier {
-    margin-top:8px ;
-    margin-left: 0;
-    justify-content: center !important;
-  }
-  .oublier span {
-    font-size: 0.9rem;
-  }
-  .oublier a {
-    font-size: 0.9rem;
-  }
-}
-.oublier{
-  margin-left: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 7px;
-  width: 100%;
-}
-.oublier span{
-  color: rgb(70, 70, 70);
-}
-.oublier a{
-  color: rgb(10, 97, 155);
-  text-decoration: none;
-  font-weight: bold;
-
-}
-.oublier a:hover{
-  text-decoration: underline;
+    align-items: center;
+    justify-content: center;
+    gap : 15px ; 
 }

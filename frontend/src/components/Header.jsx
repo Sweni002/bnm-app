@@ -141,21 +141,25 @@ const menuItems = [
   const handleMenuClose = () => {
     setMenuAnchorEl1(null); // ferme le menu
   };
+const handleLogout = () => {
+  const currentRole = role;
+  handleMenuClose();
 
-   const handleLogout = () => {
-    // Supprime le token et l'utilisateur du localStorage
+  // Redirection d'abord
+  if (currentRole === "admin") {
+    navigate("/_admins");
+  } else {
+    navigate("/login");
+  }
+
+  // Puis nettoyage après un petit délai
+  setTimeout(() => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user");
-  sessionStorage.removeItem("searchTermNorme");
-    sessionStorage.removeItem("selectedSecteurId");
-    sessionStorage.removeItem("snackMessage");
-    sessionStorage.removeItem("snackError");
-    // Ferme le menu
-    handleMenuClose();
-
-    // Appelle la fonction de logout parent
+    sessionStorage.clear();
     onLogout?.();
-  };
+  }, 500);
+};
 
   return (
     <>

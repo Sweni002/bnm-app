@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './login.module.css';
+import styles from './admin.module.css';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -16,7 +16,7 @@ import Lottie from "lottie-react";
 import noResultAnimation from "../assets/book.json"; // ajuste le chemin
 
 
-function Login({ onLogin }) {
+function Admin({ onLogin }) {
     const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
@@ -61,7 +61,7 @@ const handleLogin = async (username, password) => {
   setErrorMsg(false);
 
   try {
-    const response = await fetch("http://192.168.10.31:8000/auth/login_client", {
+    const response = await fetch("http://192.168.10.31:8000/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -109,7 +109,7 @@ onLogin?.({ role: data.data.role, name: username });
       <div className={styles.form}>
 
       {errorMsg && (
-  <Alert 
+    <Alert 
     severity="error" 
     onClose={() => setErrorMsg(false)}  // ← ici
     sx={{ fontSize: 17,  display: "flex" }}
@@ -250,9 +250,8 @@ onLogin?.({ role: data.data.role, name: username });
   fullWidth
     sx={{
          mt: 1,
-        
-  fontFamily: "Roboto, 'Helvetica Neue', Arial, sans-serif",
-        width: "100%",
+       fontFamily: "Roboto, 'Helvetica Neue', Arial, sans-serif",     
+         width: "100%",
           backgroundColor: loading ? "white" : "rgb(51, 94, 143)", // ← changement ici
     color: loading ? "rgb(51, 94, 143)" : "white",           // texte visible sur fond blanc
  
@@ -280,11 +279,6 @@ onLogin?.({ role: data.data.role, name: username });
                   {loading ? <Spin size="large" style={{color :"white"}} /> : "Se connecter"}
 
               </Button>
-              
-              <div className={styles.oublier}>
-                <span>Pas de compte ?</span>
-                <a href="/signup">S'inscrire</a>
-              </div>
 
 </div>
 
@@ -293,11 +287,11 @@ onLogin?.({ role: data.data.role, name: username });
     <Lottie 
     animationData={noResultAnimation} 
     loop={true} 
-    style={{ width: 330, height: 280 }}
+    style={{ width: 330, height: 260 }}
   />
   <div className={styles.espace}>
-    <label htmlFor="">Espace Client</label>
-  <span>Entrez vos identifiants pour continuer</span>
+    <label htmlFor="">Espace Administrateur</label>
+      <span>Entrez vos identifiants pour continuer</span>
   </div>
 </div>
 
@@ -309,4 +303,4 @@ onLogin?.({ role: data.data.role, name: username });
   );
 }
 
-export default Login;
+export default Admin;

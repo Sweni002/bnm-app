@@ -520,25 +520,41 @@ useEffect(() => {
  
 </div>
     )}
-        <div className={styles.listes2}>
- {normes
-  .filter((n) => n.nom.toLowerCase().includes(searchText.toLowerCase()))
-  .map((norme) => (
-    <CardNorme
-    navigate={navigate}
-      idnorme={norme.id}
-      images={norme.fichier_pdf || '/default.png'} // ton image ou icône PDF
-      nomnorme={norme.nom}
-      nomsecteur={norme.secteur?.nom || '—'}
-      dateEdition={norme.date_creation}
-      codification={norme.codification}
-      nbpages={norme.nbrepage}
-     setShow={setShowDetails}
-     openShow={showDetails}
-    />
-  ))}
-
+    <div
+  className={styles.listes2}
+  style={{
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent:
+      filteredNormes.length === 0 ? 'center' : 'space-around',
+    alignItems: filteredNormes.length === 0 ? 'center' : 'flex-start',
+    minHeight: '200px', // pour bien centrer verticalement si vide
+    width: '100%',
+  }}
+>
+  {filteredNormes.length === 0 ? (
+    <p style={{ fontSize: '18px', color: '#777', textAlign: 'center' }}>
+      Aucun résultat pour "<strong>{searchText}</strong>"
+    </p>
+  ) : (
+    filteredNormes.map((norme) => (
+      <CardNorme
+        key={norme.id}
+        navigate={navigate}
+        idnorme={norme.id}
+        images={norme.fichier_pdf || '/default.png'}
+        nomnorme={norme.nom}
+        nomsecteur={norme.secteur?.nom || '—'}
+        dateEdition={norme.date_creation}
+        codification={norme.codification}
+        nbpages={norme.nbrepage}
+        setShow={setShowDetails}
+        openShow={showDetails}
+      />
+    ))
+  )}
 </div>
+
  </div>
    
 

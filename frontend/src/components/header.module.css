@@ -1,9 +1,10 @@
 /* header.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
 
 *{
-
-   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-
+  
+  font-family: 'Inter', Arial, sans-serif;
 }
 .acceuil {
   display: flex;
@@ -24,8 +25,8 @@
   justify-content: space-around;
   align-items: center;
   user-select: none;
- padding-top: 15px ;
- padding-bottom: 10px;
+ padding-top: 17px;
+ padding-bottom: 7px;
  padding-left: 25px;
 padding-right: 25px;
   background-color: rgb(243, 243, 243);
@@ -34,7 +35,7 @@ padding-right: 25px;
     top: 0px; 
   width: 100%;
   z-index: 1000;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
 }
 
 .images{
@@ -44,7 +45,7 @@ padding-right: 25px;
   justify-content: center;
 }
 .images img{
-  width: 95px;
+  width: 75px;
   height: auto;
   
 }
@@ -63,13 +64,12 @@ padding-right: 25px;
 .menu ul li {
   position: relative;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 1.0rem;
   color: #222; /* noir/gris foncé neutre */
   cursor: pointer;
   padding: 6px 12px;
 
-   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-
+  font-family: 'Inter', Arial, sans-serif;
   transition: color 0.25s ease;
 }
 
@@ -133,11 +133,12 @@ padding-right: 25px;
   justify-content: center;
 }
 .text h3{
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: rgb(90, 90, 90);
 }
 
 .text label{
+  font-size: 1.0rem;
   color: rgb(31, 31, 31);
 }
 

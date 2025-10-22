@@ -61,7 +61,9 @@ const [totalPrix, setTotalPrix] = useState(0);
   const [selectedSecteurId, setSelectedSecteurId] = useState(null); // <--- nouvel état
   const [selected, setSelected] = useState(""); // nom du secteur sélectionné
 const [showDetails, setShowDetails] = useState(false);
-
+const filteredNormes = normes
+  .filter(n => selectedSecteurId ? n.secteur?.id === selectedSecteurId : true) // filtre secteur
+  .filter(n => n.nom.toLowerCase().includes(searchText.toLowerCase()));         // filtre recherche
 
 
  useEffect(() => {
@@ -134,6 +136,20 @@ const openPdf = async (norme) => {
     setShowRight(!atEnd);
   }
 };
+
+useEffect(() => {
+  const fetchNormes = async () => {
+    try {
+      const res = await authFetch("/normes", {}, navigate);
+      if (res?.success) {
+        setNormes(res.data); // ← directement remplir l’état
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  fetchNormes();
+}, [navigate]);
 
 
 useEffect(() => {
@@ -352,38 +368,53 @@ const scroll = (direction) => {
   
 
            </div>
- <div className={styles.listes}>
+ <div className={styles.listes} 
+  style={{
+    display: 'flex',
+    justifyContent:
+      filteredNormes.length === 0 ? 'center' : 'flex-start',
+  }}
+  >
 
-    <div className={styles.listes2}>
-  {normes
-    .filter((n) => n.nom.toLowerCase().includes(searchText.toLowerCase()))
-    .slice(0, visibleCount)
-    .map((norme) => (
-      <CardNorme
-        navigate={navigate}
-        key={norme.id}
-        idnorme={norme.id}
-        images={norme.fichier_pdf || '/default.png'}
-        nomnorme={norme.nom}
-        nomsecteur={norme.secteur?.nom || '—'}
-        dateEdition={norme.date_creation}
-        codification={norme.codification}
-        nbpages={norme.nbrepage}
-         setShow={setShowDetails}
-  openShow={showDetails}
-      />
-    ))}
+ <div className={styles.listes2}>
+  {filteredNormes.length > 0 ? (
+    <>
+      {filteredNormes.slice(0, visibleCount).map((norme) => (
+        <CardNorme
+          navigate={navigate}
+          key={norme.id}
+          idnorme={norme.id}
+          images={norme.fichier_pdf || '/default.png'}
+          nomnorme={norme.nom}
+          nomsecteur={norme.secteur?.nom || '—'}
+          dateEdition={norme.date_creation}
+          codification={norme.codification}
+          nbpages={norme.nbrepage}
+          setShow={setShowDetails}
+          openShow={showDetails}
+        />
+      ))}
 
-  {/* Bouton "Afficher plus" */}
-  {visibleCount < normes.filter((n) =>
-      n.nom.toLowerCase().includes(searchText.toLowerCase())
-    ).length && (
-      <div className={styles.showMoreCard} onClick={() => navigate("/a_propos")}>
-        <i className="fa-solid fa-right-long" style={{ fontSize: '2rem' }}></i>
-        <span>Voir plus</span>
-      </div>
-    )}
+      {visibleCount < filteredNormes.length && (
+        <div
+          className={styles.showMoreCard}
+          onClick={() => navigate("/a_propos")}
+        >
+          <i
+            className="fa-solid fa-right-long"
+            style={{ fontSize: "2rem" }}
+          ></i>
+          <span>Voir plus</span>
+        </div>
+      )}
+    </>
+  ) : (
+    <div className={styles.noResult}>
+      Aucun résultat pour "<strong>{searchText}</strong>"
+    </div>
+  )}
 </div>
+
 
 
  </div>

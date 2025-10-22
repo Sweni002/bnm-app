@@ -4,6 +4,8 @@ import { Commet } from 'react-loading-indicators';
 import Login from './components/Login';
 import Site from './components/Site';
 import PrivateRoute from './PrivateRoute';
+import Admin from './components/Admin';
+import SignUp from './components/signup';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -15,9 +17,11 @@ useEffect(() => {
   return () => clearTimeout(timer);
 }, []);
 
-  const handleLogin = (role) => {
-    setUser(role);
-  };
+ const handleLogin = (userData) => {
+  setUser(userData);
+  localStorage.setItem("user", JSON.stringify(userData));
+};
+
    const handleLogout = () => {
     setUser(null); // réinitialise le state
   };
@@ -35,6 +39,9 @@ useEffect(() => {
     <Router>
       <Routes>
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
+         <Route path="/_admins" element={<Admin onLogin={handleLogin} />} />
+      <Route path="/signup" element={<SignUp onLogin={handleLogin} />} />
+    
         <Route 
           path="/*" 
           element={
@@ -43,8 +50,7 @@ useEffect(() => {
       </PrivateRoute>
           } 
         />
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
+          </Routes>
     </Router>
   );
 }

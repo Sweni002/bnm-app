@@ -60,7 +60,7 @@ flex-direction: column;
   justify-content: center;
    gap: 20px;
    padding: 0;
-   width:90%;
+   width: 85%;
 }
 .droite{
   
@@ -83,6 +83,13 @@ flex-direction: column;
   color: rgb(10, 97, 155);
   font-weight:bold ;
 }
+.espace span{
+    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+  color: rgb(75, 74, 74);
+  font-size: 1.0rem;
+  letter-spacing: 1 !important;
+}
+
 
 .error{
  padding: 10px;
@@ -96,10 +103,10 @@ flex-direction: column;
   justify-content: center;
 }
 .entete h2{
-    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
   font-size: 1.7rem;
   font-weight: 570;
   color: rgb(10, 97, 155);
+    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
 }
 .entete h3{
     font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
@@ -189,11 +196,6 @@ flex-direction: column;
   background-color: #ccc;
   width: 100%;
 }
-.espace span{
-  color: rgb(75, 74, 74);
-  font-size: 1.0rem;
-  letter-spacing: 1 !important;
-}
 
 
 @media (max-width : 430px) {
@@ -241,7 +243,7 @@ padding: 25px;
 @media (max-width : 660px) {
 
   .form{
-    max-width: 80% ;
+    max-width: 80%;
   }
   .droite{
     display: none;
@@ -249,43 +251,12 @@ padding: 25px;
   .gauche{
     width: 100%;
   }
-  .entete{
-   align-items: flex-start;
+  .entete {
+    align-items: flex-start;
   }
-.error{
-  padding: 0;}
   .entete h2{
     font-size: 1.5rem;
   }
-  .oublier {
-    margin-top:8px ;
-    margin-left: 0;
-    justify-content: center !important;
-  }
-  .oublier span {
-    font-size: 0.9rem;
-  }
-  .oublier a {
-    font-size: 0.9rem;
-  }
-}
-.oublier{
-  margin-left: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 7px;
-  width: 100%;
-}
-.oublier span{
-  color: rgb(70, 70, 70);
-}
-.oublier a{
-  color: rgb(10, 97, 155);
-  text-decoration: none;
-  font-weight: bold;
-
-}
-.oublier a:hover{
-  text-decoration: underline;
+  .error{
+  padding: 0;}
 }

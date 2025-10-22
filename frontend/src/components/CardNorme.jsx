@@ -119,12 +119,13 @@ const [pdfUrls, setPdfUrls] = React.useState("");
         setLoadingPdf(true)
       try {
     
-        const blob = await authFetchPdf(
-          `/normes/${idnorme}/pdf`,
-          {},
-          navigate,
-          "blob"
-        );
+      const blob = await authFetchPdf(
+  `/normes/${idnorme}/pdf`,
+  {},
+  navigate,
+  "blob"
+);
+
         if (!blob)  {
             setLoadingPdf(false)
             return ;

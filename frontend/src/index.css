@@ -1,5 +1,5 @@
 :root {
-   font-family: "Inter", system-ui, sans-serif;
+  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
  line-height: 1.5;
   font-weight: 400;
 
@@ -14,7 +14,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
 
 }
 

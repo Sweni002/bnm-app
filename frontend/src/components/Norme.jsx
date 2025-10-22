@@ -402,6 +402,11 @@ const columns = [
     dataIndex: 'nomsecteur',
     key: 'nomsecteur',
   },
+   {
+    title: 'Nbre de page',
+    dataIndex: 'nbrepage',
+    key: 'nbrepage',
+  },
   {
     title: '',
     key: 'actions',
