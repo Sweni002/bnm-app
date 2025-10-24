@@ -132,7 +132,7 @@ const [pdfUrls, setPdfUrls] = React.useState("");
         }
         const arrayBuffer = await blob.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        const page = await pdf.getPage(1);
+        const page = await pdf.getPage(2);
         const viewport = page.getViewport({ scale: 1.2 });
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
@@ -267,12 +267,13 @@ const goApropos = () => {
   <Box
    
     sx={{
+      userSelect :"none" ,
       position: 'absolute',
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
       width: '100%',
-      maxWidth :610,
+      maxWidth :810,
        '@media (max-width:800px)': {
       maxWidth: "510px !important",
     },

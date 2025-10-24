@@ -74,10 +74,10 @@ align-items: center;
 
 .haut button{
   
-  padding: 15px 20px 15px 20px;
+  padding: 10px 20px 10px 20px;
   outline: none;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   background-color: #1B6979;
   box-shadow: 0 7px 7px rgba(0,0,0,0.1);
   cursor: pointer;
@@ -103,10 +103,10 @@ align-items: center;
   align-items: center;
 }
 .jk i{
-  font-size: 19px;
+  font-size: 1.1rem;
 }
 .jk span{
-  font-size: 17px;
+  font-size: 1.0rem;
 }
 
 

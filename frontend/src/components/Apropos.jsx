@@ -591,7 +591,8 @@ useEffect(() => {
       left: '50%',
       transform: 'translate(-50%, -50%)',
       width: '100%',
-       maxWidth :610,
+       userSelect :"none" ,
+       maxWidth :810,
        '@media (max-width:800px)': {
       maxWidth: "510px !important",
     },
